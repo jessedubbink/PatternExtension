@@ -117,25 +117,8 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="MethodDescription" xml:space="preserve">
-    <value>Detects a private method</value>
-  </data>
-  <data name="MethodMessage" xml:space="preserve">
-    <value>This is a private method</value>
-  </data>
-  <data name="MethodTitle" xml:space="preserve">
-    <value>Method</value>
-  </data>
-  <data name="SingletonDescription" xml:space="preserve">
-    <value>Detects the singleton</value>
-    <comment>An optional longer localizable description of the diagnostic.</comment>
-  </data>
-  <data name="SingletonMessage" xml:space="preserve">
-    <value>This is the singleton right?</value>
-    <comment>The format-able message the diagnostic displays.</comment>
-  </data>
-  <data name="SingletonTitle" xml:space="preserve">
-    <value>Singleton</value>
-    <comment>The title of the diagnostic.</comment>
+  <data name="CodeFixTitle" xml:space="preserve">
+    <value>Make uppercase</value>
+    <comment>The title of the code fix.</comment>
   </data>
 </root>

@@ -3,7 +3,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections.Immutable;
 
-namespace InspectorPatterns.Test.Verifiers
+namespace InspectorPatterns.Test
 {
     internal static class CSharpVerifierHelper
     {

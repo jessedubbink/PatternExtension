@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011" xmlns:d="http://schemas.microsoft.com/developer/vsx-schema-design/2011">
   <Metadata>
-    <Identity Id="Analyzer.ccfad74c-612c-4f13-9749-b74cc32225fb" Version="1.0" Language="en-US" Publisher="sam"/>
-    <DisplayName>Analyzer</DisplayName>
+    <Identity Id="InspectorPatterns.33be1ab9-2cda-4494-ae7d-fde89b263163" Version="1.0" Language="en-US" Publisher="micha"/>
+    <DisplayName>InspectorPatterns</DisplayName>
     <Description xml:space="preserve">This is a sample diagnostic extension for the .NET Compiler Platform ("Roslyn").</Description>
   </Metadata>
   <Installation>
