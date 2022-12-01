@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InspectorPatterns.Test", "I
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InspectorPatterns.Vsix", "InspectorPatterns\InspectorPatterns.Vsix\InspectorPatterns.Vsix.csproj", "{EE654B93-5FC7-4FE7-BB9F-61E95D6B1EF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InspectorPatterns.Core", "InspectorPatterns.Core\InspectorPatterns.Core.csproj", "{0FAB3AF0-89ED-4B90-94ED-E65F39C6CA33}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{EE654B93-5FC7-4FE7-BB9F-61E95D6B1EF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE654B93-5FC7-4FE7-BB9F-61E95D6B1EF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE654B93-5FC7-4FE7-BB9F-61E95D6B1EF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FAB3AF0-89ED-4B90-94ED-E65F39C6CA33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FAB3AF0-89ED-4B90-94ED-E65F39C6CA33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FAB3AF0-89ED-4B90-94ED-E65F39C6CA33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FAB3AF0-89ED-4B90-94ED-E65F39C6CA33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
