@@ -129,4 +129,13 @@
     <value>Type name contains lowercase letters</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="SingletonDescription" xml:space="preserve">
+    <value>Is a singleton</value>
+  </data>
+  <data name="SingletonMessage" xml:space="preserve">
+    <value>This is a singleton</value>
+  </data>
+  <data name="SingletonTitle" xml:space="preserve">
+    <value>Singleton</value>
+  </data>
 </root>
