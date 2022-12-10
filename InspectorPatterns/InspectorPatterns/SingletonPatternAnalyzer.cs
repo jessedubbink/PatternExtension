@@ -1,4 +1,6 @@
-﻿using InspectorPatterns.Core.DesignPatterns.Interfaces;
+﻿using InspectorPatterns.Core;
+using InspectorPatterns.Core.DesignPatterns.Analyzers;
+using InspectorPatterns.Core.DesignPatterns.Interfaces;
 using InspectorPatterns.Core.Interfaces;
 using InspectorPatterns.Core.Models;
 using Microsoft.CodeAnalysis;
@@ -15,7 +17,7 @@ using System.Threading;
 namespace InspectorPatterns
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class SingletonAnalyzer2 : DiagnosticAnalyzer
+    public class SingletonPatternAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "InspectorPatterns";
 
@@ -39,7 +41,7 @@ namespace InspectorPatterns
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ClassDeclaration);
         }
-
+        
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
             //var classTree = context.Node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
@@ -51,9 +53,11 @@ namespace InspectorPatterns
             //    return;
             //}
 
+            // if (results.HasPrivateConstructor)
             //if (!constructorDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
             //{
             //    return;
+            //      context.ReportDiagnostic(Diagnostic.Create(SupportedDiagnostics.Rule2, constructorDeclaration.GetLocation()));
             //}
 
             //if (variableDeclaration != null && !variableDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
@@ -61,39 +65,51 @@ namespace InspectorPatterns
             //    return;
             //}
 
-            //context.ReportDiagnostic(Diagnostic.Create(Rule, constructorDeclaration.GetLocation()));
+            var analyzer = new SingletonAnalyzer(context);
 
-            var y = context.Node;
-        }
-
-        private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
-        {
-            var parents = new List<ClassSyntaxModel>();
-            foreach (var item in node.Ancestors())
+            // HasPrivateContstructor
+            if (true)
             {
-                var parent = item as TypeDeclarationSyntax;
-                if (parent is InterfaceDeclarationSyntax)
-                {
-                    parents.Add(new ClassSyntaxModel
-                    {
-                        Identifier = parent.Identifier.ToString()
-                    });
-                }
-                else
-                {
-                    parents.Add(new ClassSyntaxModel
-                    {
-                        Identifier = parent.Identifier.ToString()
-                    });
-                }
-                
+                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
             }
 
-            return new ClassSyntaxModel
+            // HasGetInstance
+            if (true)
             {
-                Parents = parents,
-                Identifier = node.Identifier.ToString()
-            };
+                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            }
+
+            //context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
+
+        //private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
+        //{
+        //    var parents = new List<ClassSyntaxModel>();
+        //    foreach (var item in node.Ancestors())
+        //    {
+        //        var parent = item as TypeDeclarationSyntax;
+        //        if (parent is InterfaceDeclarationSyntax)
+        //        {
+        //            parents.Add(new ClassSyntaxModel
+        //            {
+        //                Identifier = parent.Identifier.ToString()
+        //            });
+        //        }
+        //        else
+        //        {
+        //            parents.Add(new ClassSyntaxModel
+        //            {
+        //                Identifier = parent.Identifier.ToString()
+        //            });
+        //        }
+                
+        //    }
+
+        //    return new ClassSyntaxModel
+        //    {
+        //        Parents = parents,
+        //        Identifier = node.Identifier.ToString()
+        //    };
+        //}
     }
 }

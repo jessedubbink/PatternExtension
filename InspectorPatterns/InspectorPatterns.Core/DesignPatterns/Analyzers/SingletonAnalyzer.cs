@@ -9,9 +9,11 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 {
     public class SingletonAnalyzer : IAnalyzer, ISingletonPattern
     {
+        private readonly SyntaxNodeAnalysisContext _context;
+
         public SingletonAnalyzer(SyntaxNodeAnalysisContext context)
         {
-
+            _context = context;
         }
 
         public void Analyze()
