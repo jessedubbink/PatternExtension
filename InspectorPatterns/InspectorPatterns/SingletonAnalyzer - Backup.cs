@@ -15,7 +15,7 @@ using System.Threading;
 namespace InspectorPatterns
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class SingletonAnalyzer : DiagnosticAnalyzer
+    public class SingletonAnalyzer2 : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "InspectorPatterns";
 
@@ -62,6 +62,8 @@ namespace InspectorPatterns
             //}
 
             //context.ReportDiagnostic(Diagnostic.Create(Rule, constructorDeclaration.GetLocation()));
+
+            var y = context.Node;
         }
 
         private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
