@@ -52,7 +52,11 @@ namespace InspectorPatterns.Test
         }
     }";
 
+
+
             var expected = VerifyCS.Diagnostic("InspectorPatterns").WithLocation(0).WithArguments("TypeName");
+
+
             await VerifyCS.VerifyCodeFixAsync(test, expected, fixtest);
         }
     }
