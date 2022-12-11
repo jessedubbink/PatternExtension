@@ -16,8 +16,6 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
         private readonly SyntaxNodeAnalysisContext _context;
         public Location Location { get; set; }
 
-        public int MyProperty { get; set; }
-
         public SingletonAnalyzer(SyntaxNodeAnalysisContext context)
         {
             _context = context;
