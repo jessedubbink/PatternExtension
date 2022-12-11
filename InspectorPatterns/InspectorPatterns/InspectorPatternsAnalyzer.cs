@@ -40,12 +40,7 @@ namespace InspectorPatterns
 
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var analyzer = new CoreAnalyzer(context);
-
-            if (analyzer.Results.HasPrivateConstructor)
-            {
-
-            }
+            //var analyzer = new CoreAnalyzer(context);            
         }
     }
 }

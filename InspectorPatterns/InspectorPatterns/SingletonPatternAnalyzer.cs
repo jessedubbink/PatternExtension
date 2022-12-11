@@ -44,39 +44,11 @@ namespace InspectorPatterns
         
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            //var classTree = context.Node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
-            //var constructorDeclaration = classTree.DescendantNodes().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
-            //var variableDeclaration = classTree.DescendantNodes().OfType<FieldDeclarationSyntax>().FirstOrDefault();
-
-            //if (constructorDeclaration == null || constructorDeclaration == null)
-            //{
-            //    return;
-            //}
-
-            // if (results.HasPrivateConstructor)
-            //if (!constructorDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
-            //{
-            //    return;
-            //      context.ReportDiagnostic(Diagnostic.Create(SupportedDiagnostics.Rule2, constructorDeclaration.GetLocation()));
-            //}
-
-            //if (variableDeclaration != null && !variableDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
-            //{
-            //    return;
-            //}
-
             var analyzer = new SingletonAnalyzer(context);
 
-            // HasPrivateContstructor
-            if (true)
+            if (analyzer.Analyze())
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
-            }
-
-            // HasGetInstance
-            if (true)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, analyzer.Location));
             }
 
             //context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));

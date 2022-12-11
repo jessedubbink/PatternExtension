@@ -6,6 +6,6 @@ namespace InspectorPatterns.Core.Interfaces
 {
     public interface IAnalyzer
     {
-        void Analyze();
+        bool Analyze();
     }
 }
