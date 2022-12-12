@@ -7,12 +7,17 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Threading;
 
 namespace InspectorPatterns
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class FlyweightPatternAnalyzer : DiagnosticAnalyzer
+    public class SingletonPatternAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "InspectorPatterns";
 
@@ -39,14 +44,6 @@ namespace InspectorPatterns
         
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            bool giveFeedback = false;
-            var analyzer = new FlyweightAnalyzer(context);
-
-            if(analyzer.HasUniqueState() && analyzer.HasCacheState())
-            {
-                giveFeedback = true;
-            }
-
             //var classTree = context.Node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
             //var constructorDeclaration = classTree.DescendantNodes().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
             //var variableDeclaration = classTree.DescendantNodes().OfType<FieldDeclarationSyntax>().FirstOrDefault();
@@ -68,12 +65,51 @@ namespace InspectorPatterns
             //    return;
             //}
 
-            //context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            var analyzer = new SingletonAnalyzer(context);
 
-            if (giveFeedback == true)
+            // HasPrivateContstructor
+            if (true)
             {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
             }
+
+            // HasGetInstance
+            if (true)
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            }
+
+            //context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
+
+        //private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
+        //{
+        //    var parents = new List<ClassSyntaxModel>();
+        //    foreach (var item in node.Ancestors())
+        //    {
+        //        var parent = item as TypeDeclarationSyntax;
+        //        if (parent is InterfaceDeclarationSyntax)
+        //        {
+        //            parents.Add(new ClassSyntaxModel
+        //            {
+        //                Identifier = parent.Identifier.ToString()
+        //            });
+        //        }
+        //        else
+        //        {
+        //            parents.Add(new ClassSyntaxModel
+        //            {
+        //                Identifier = parent.Identifier.ToString()
+        //            });
+        //        }
+                
+        //    }
+
+        //    return new ClassSyntaxModel
+        //    {
+        //        Parents = parents,
+        //        Identifier = node.Identifier.ToString()
+        //    };
+        //}
     }
 }

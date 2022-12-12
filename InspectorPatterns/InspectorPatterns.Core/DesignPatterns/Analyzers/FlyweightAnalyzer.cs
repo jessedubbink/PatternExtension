@@ -1,7 +1,5 @@
 ﻿using InspectorPatterns.Core.DesignPatterns.Interfaces;
 using InspectorPatterns.Core.Interfaces;
-using InspectorPatterns.Core.Models;
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 
@@ -21,14 +19,24 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
             throw new NotImplementedException();
         }
 
-        public bool HasCacheState()
-        {
-            throw new NotImplementedException();
-        }
-
         public bool HasUniqueState()
         {
-            throw new NotImplementedException();
+            bool result = false;
+
+            var classTree = _context.Node.SyntaxTree.GetRoot();
+            // var uniqueStateDecleration = classTree.DescendantNodes().OfType<>().FirstOrDefault().Identifier;
+
+            return result;
+        }
+
+        public bool HasCacheState()
+        {
+            bool result = false;
+
+            var classTree = _context.Node.SyntaxTree.GetRoot();
+            // var cacheStateDecleration = classTree.DescendantNodes().OfType<>().FirstOrDefault().Identifier;
+
+            return result;
         }
     }
 }

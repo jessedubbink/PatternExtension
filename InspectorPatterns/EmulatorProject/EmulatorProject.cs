@@ -4,7 +4,7 @@ namespace EmulatorProject
 {
     public class EmulatorProject
     {
-        public static void Main(string[] args)
+        public static void Main()
         {
             #region "Singleton"
 
