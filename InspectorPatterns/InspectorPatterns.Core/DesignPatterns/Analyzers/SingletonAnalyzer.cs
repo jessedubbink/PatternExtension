@@ -13,14 +13,12 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 {
     public class SingletonAnalyzer : IAnalyzer, ISingletonPattern
     {
-        private readonly SyntaxNodeAnalysisContext _context;
         private readonly SyntaxNode _classTree;
         private Location location;
 
         public SingletonAnalyzer(SyntaxNodeAnalysisContext context)
         {
-            _context = context;
-            _classTree = _context.Node.SyntaxTree.GetRoot();
+            _classTree = context.Node.SyntaxTree.GetRoot();
         }
 
         public bool Analyze()
