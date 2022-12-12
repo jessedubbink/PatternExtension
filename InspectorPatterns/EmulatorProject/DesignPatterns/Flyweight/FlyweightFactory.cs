@@ -23,10 +23,12 @@ namespace EmulatorProject.DesignPatterns.Flyweight
         {
             List<string> elements = new List<string>();
 
+            // Flyweight properties
             elements.Add(key.Model);
             elements.Add(key.Color);
             elements.Add(key.Company);
 
+            // Unique properties
             if (key.Owner != null && key.Number != null)
             {
                 elements.Add(key.Number);
@@ -42,18 +44,18 @@ namespace EmulatorProject.DesignPatterns.Flyweight
         // one.
         public Flyweight GetFlyweight(Car sharedState)
         {
-            string key = this.GetKey(sharedState);
+            string key = GetKey(sharedState);
 
             if (flyweights.Where(t => t.Item2 == key).Count() == 0)
             {
                 Console.WriteLine("FlyweightFactory: Can't find a flyweight, creating new one.");
-                this.flyweights.Add(new Tuple<Flyweight, string>(new Flyweight(sharedState), key));
+                flyweights.Add(new Tuple<Flyweight, string>(new Flyweight(sharedState), key));
             }
             else
             {
                 Console.WriteLine("FlyweightFactory: Reusing existing flyweight.");
             }
-            return this.flyweights.Where(t => t.Item2 == key).FirstOrDefault().Item1;
+            return flyweights.Where(t => t.Item2 == key).FirstOrDefault().Item1;
         }
 
         public void ListFlyweights()

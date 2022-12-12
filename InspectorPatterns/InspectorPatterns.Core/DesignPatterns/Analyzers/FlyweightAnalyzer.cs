@@ -1,22 +1,33 @@
 ﻿using InspectorPatterns.Core.DesignPatterns.Interfaces;
 using InspectorPatterns.Core.Interfaces;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using System.Linq;
 
 namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 {
     public class FlyweightAnalyzer : IAnalyzer, IFlyweightPattern
     {
-        private readonly SyntaxNodeAnalysisContext _context;
+        private readonly SyntaxNode _classTree;
+        private Location location;
 
         public FlyweightAnalyzer(SyntaxNodeAnalysisContext context)
         {
-            _context = context;
+            _classTree = context.Node.SyntaxTree.GetRoot();
         }
 
         public bool Analyze()
         {
-            throw new NotImplementedException();
+            if (HasUniqueState() && HasCacheState())
+            {
+                location = _classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().Identifier.GetLocation();
+
+                return true;
+            }
+
+            return false;
         }
 
         public Location GetLocation()
@@ -26,22 +37,16 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 
         public bool HasUniqueState()
         {
-            bool result = false;
+            // var uniqueStateDecleration = _classTree.DescendantNodes().OfType<>().FirstOrDefault().Identifier;
 
-            var classTree = _context.Node.SyntaxTree.GetRoot();
-            // var uniqueStateDecleration = classTree.DescendantNodes().OfType<>().FirstOrDefault().Identifier;
-
-            return result;
+            return false;
         }
 
         public bool HasCacheState()
         {
-            bool result = false;
+            // var cacheStateDecleration = _classTree.DescendantNodes().OfType<>().FirstOrDefault().Identifier;
 
-            var classTree = _context.Node.SyntaxTree.GetRoot();
-            // var cacheStateDecleration = classTree.DescendantNodes().OfType<>().FirstOrDefault().Identifier;
-
-            return result;
+            return false;
         }
     }
 }

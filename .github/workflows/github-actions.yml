@@ -1,6 +1,6 @@
 name: Run Analyzer.Test tests
 run-name: ${{ github.actor }} is running Unit-tests
-on: [push]
+on: [pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
