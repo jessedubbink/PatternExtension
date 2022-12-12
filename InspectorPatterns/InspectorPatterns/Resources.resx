@@ -133,7 +133,7 @@
     <value>Is a singleton</value>
   </data>
   <data name="SingletonMessage" xml:space="preserve">
-    <value>This is a singleton</value>
+    <value>It seems you have implemented the Singleton pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/singleton</value>
   </data>
   <data name="SingletonTitle" xml:space="preserve">
     <value>Singleton</value>

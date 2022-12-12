@@ -4,7 +4,7 @@ using System.Text;
 
 namespace InspectorPatterns.Core.Models
 {
-    public class ClassSyntaxModel
+    public class ClassSyntaxNode
     {
         public string[] Modifiers { get; set; }
         public string[] Members { get; set; }
@@ -16,7 +16,7 @@ namespace InspectorPatterns.Core.Models
 
         private List<string> _methods = new List<string>();
         private List<string> _properties = new List<string>();
-        public List<ClassSyntaxModel> Parents = new List<ClassSyntaxModel>();
-        public List<ClassSyntaxModel> ObjectCreations = new List<ClassSyntaxModel>();
+        public List<ClassSyntaxNode> Parents = new List<ClassSyntaxNode>();
+        public List<ClassSyntaxNode> ObjectCreations = new List<ClassSyntaxNode>();
     }
 }

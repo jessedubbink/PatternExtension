@@ -7,7 +7,7 @@ namespace InspectorPatterns.Core.DesignPatterns.Interfaces
     internal interface ISingletonPattern
     {
         bool HasPrivateConstructor();
-        bool HasPrivateStaticSelf();
-        bool HasGetInstance();
+        bool HasPrivateStaticSelfField();
+        bool HasGetInstanceSelfMethod();
     }
 }

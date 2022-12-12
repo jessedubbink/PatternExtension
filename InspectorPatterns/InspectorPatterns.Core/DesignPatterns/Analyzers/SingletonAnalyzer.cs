@@ -14,19 +14,20 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
     public class SingletonAnalyzer : IAnalyzer, ISingletonPattern
     {
         private readonly SyntaxNodeAnalysisContext _context;
-        public Location Location { get; set; }
+        private readonly SyntaxNode _classTree;
+        private Location location;
 
         public SingletonAnalyzer(SyntaxNodeAnalysisContext context)
         {
             _context = context;
+            _classTree = _context.Node.SyntaxTree.GetRoot();
         }
 
         public bool Analyze()
         {
-            if (HasGetInstance() && HasPrivateConstructor() && HasPrivateStaticSelf())
+            if (HasGetInstanceSelfMethod() && HasPrivateConstructor() && HasPrivateStaticSelfField())
             {
-                var classTree = _context.Node.SyntaxTree.GetRoot();
-                Location = classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().Identifier.GetLocation();
+                location = _classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().Identifier.GetLocation();
 
                 return true;
             }
@@ -34,10 +35,9 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
             return false;
         }
 
-        public bool HasGetInstance()
+        public bool HasGetInstanceSelfMethod()
         {
-            var classTree = _context.Node.SyntaxTree.GetRoot();
-            var methodDeclarations = classTree.DescendantNodes().OfType<MethodDeclarationSyntax>();
+            var methodDeclarations = _classTree.DescendantNodes().OfType<MethodDeclarationSyntax>();
 
             if (!methodDeclarations.Any())
             {
@@ -49,10 +49,9 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
                 var method = methodDeclarations.ElementAt(i);
                 if (method.Modifiers.Any(SyntaxKind.PublicKeyword) && method.Modifiers.Any(SyntaxKind.StaticKeyword))
                 {
-                    var methodReturnType = method.ReturnType as IdentifierNameSyntax;
-                    var classDeclaration = classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+                    var classDeclaration = _classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-                    if (methodReturnType == null)
+                    if (!(method.ReturnType is IdentifierNameSyntax methodReturnType))
                     {
                         return false;
                     }
@@ -69,8 +68,7 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 
         public bool HasPrivateConstructor()
         {
-            var classTree = _context.Node.SyntaxTree.GetRoot();
-            var constructorDeclarations = classTree.DescendantNodes().OfType<ConstructorDeclarationSyntax>();
+            var constructorDeclarations = _classTree.DescendantNodes().OfType<ConstructorDeclarationSyntax>();
 
             if (!constructorDeclarations.Any())
             {
@@ -89,22 +87,26 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
             return false;
         }
 
-        public bool HasPrivateStaticSelf()
+        public bool HasPrivateStaticSelfField()
         {
-            var classTree = _context.Node.SyntaxTree.GetRoot();
-            var fieldDeclarations = classTree.DescendantNodes().OfType<FieldDeclarationSyntax>();
-            var classDeclaration = classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+            var fieldDeclarations = _classTree.DescendantNodes().OfType<FieldDeclarationSyntax>();
 
             if (!fieldDeclarations.Any())
             {
                 return false;
             }
 
+            var classDeclaration = _classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+
             for (int i = 0; i < fieldDeclarations.Count(); i++)
             {
                 var field = fieldDeclarations.ElementAt(i);
 
-                var type = field.Declaration.Type as IdentifierNameSyntax;
+                if (!(field.Declaration.Type is IdentifierNameSyntax type))
+                {
+                    return false;
+                }
+
                 if (field.Modifiers.Any(SyntaxKind.PrivateKeyword) && field.Modifiers.Any(SyntaxKind.StaticKeyword) && type.Identifier.Value.Equals(classDeclaration.Identifier.Value))
                 {
                     return true;
@@ -112,6 +114,11 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
             }
 
             return false;
+        }
+
+        public Location GetLocation()
+        {
+            return location;
         }
     }
 }

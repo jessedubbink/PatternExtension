@@ -21,6 +21,11 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
             throw new NotImplementedException();
         }
 
+        public Location GetLocation()
+        {
+            throw new NotImplementedException();
+        }
+
         public bool HasCacheState()
         {
             throw new NotImplementedException();

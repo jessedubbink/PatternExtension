@@ -44,14 +44,12 @@ namespace InspectorPatterns
         
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var analyzer = new SingletonAnalyzer(context);
+            var analyzer = new DesignPatternAnalyzer(new SingletonAnalyzer(context));
 
             if (analyzer.Analyze())
             {
                 context.ReportDiagnostic(Diagnostic.Create(Rule, analyzer.Location));
             }
-
-            //context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
         //private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
