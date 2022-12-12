@@ -97,7 +97,7 @@ namespace InspectorPatterns {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This is a singleton.
+        ///   Looks up a localized string similar to It seems you have implemented the Singleton pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/singleton.
         /// </summary>
         internal static string SingletonMessage {
             get {

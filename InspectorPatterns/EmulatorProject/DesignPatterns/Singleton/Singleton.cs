@@ -1,4 +1,4 @@
-﻿namespace EmulatorProject.DesignPatterns
+﻿namespace EmulatorProject.DesignPatterns.Singleton
 {
     public sealed class Singleton
     {

@@ -14,7 +14,12 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
             _context = context;
         }
 
-        public void Analyze()
+        public bool Analyze()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Location GetLocation()
         {
             throw new NotImplementedException();
         }

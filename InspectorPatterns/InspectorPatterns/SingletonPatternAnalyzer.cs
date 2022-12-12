@@ -36,43 +36,14 @@ namespace InspectorPatterns
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ClassDeclaration);
         }
-        
+
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            bool giveFeedback = false;
-            var analyzer = new FlyweightAnalyzer(context);
+            var analyzer = new DesignPatternAnalyzer(new SingletonAnalyzer(context));
 
-            if(analyzer.HasUniqueState() && analyzer.HasCacheState())
+            if (analyzer.Analyze())
             {
-                giveFeedback = true;
-            }
-
-            //var classTree = context.Node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
-            //var constructorDeclaration = classTree.DescendantNodes().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
-            //var variableDeclaration = classTree.DescendantNodes().OfType<FieldDeclarationSyntax>().FirstOrDefault();
-
-            //if (constructorDeclaration == null || constructorDeclaration == null)
-            //{
-            //    return;
-            //}
-
-            // if (results.HasPrivateConstructor)
-            //if (!constructorDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
-            //{
-            //    return;
-            //      context.ReportDiagnostic(Diagnostic.Create(SupportedDiagnostics.Rule2, constructorDeclaration.GetLocation()));
-            //}
-
-            //if (variableDeclaration != null && !variableDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
-            //{
-            //    return;
-            //}
-
-            //context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
-
-            if (giveFeedback == true)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, analyzer.Location));
             }
         }
     }
