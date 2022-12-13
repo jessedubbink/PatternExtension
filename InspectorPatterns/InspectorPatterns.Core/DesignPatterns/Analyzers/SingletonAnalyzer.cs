@@ -3,11 +3,7 @@ using InspectorPatterns.Core.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
-using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 {
@@ -16,9 +12,9 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
         private readonly SyntaxNode _classTree;
         private Location location;
 
-        public SingletonAnalyzer(SyntaxNodeAnalysisContext context)
+        public SingletonAnalyzer(SyntaxNode context)
         {
-            _classTree = context.Node.SyntaxTree.GetRoot();
+            _classTree = context;
         }
 
         public bool Analyze()
