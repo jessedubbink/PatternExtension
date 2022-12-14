@@ -60,7 +60,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         public void Test_HasGetInstanceSelfMethod_ShouldSucceed()
         {
             //Arrange
-            var wrongCode = @"
+            var correctCode = @"
                 public sealed class Singleton
                 {
                     private static Singleton _instance;
@@ -72,7 +72,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                         return _instance;
                     }
                 }";
-            var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
+            var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
             _singletonAnalyzer = new SingletonAnalyzer(contextNode);
 
             //Act
@@ -136,7 +136,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         public void Test_HasPrivateConstructor_ShouldSucceed()
         {
             //Arrange
-            var wrongCode = @"
+            var correctCode = @"
                 public sealed class Singleton
                 {
                     private static Singleton _instance;
@@ -148,7 +148,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                         return _instance;
                     }
                 }";
-            var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
+            var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
             _singletonAnalyzer = new SingletonAnalyzer(contextNode);
 
             //Act
@@ -264,7 +264,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         public void Test_HasPrivateStaticSelfField_ShouldSucceed()
         {
             //Arrange
-            var wrongCode = @"
+            var correctCode = @"
                 public sealed class Singleton
                 {
                     private static Singleton _instance;
@@ -283,7 +283,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                         Console.WriteLine(_teststring);
                     }
                 }";
-            var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
+            var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
             _singletonAnalyzer = new SingletonAnalyzer(contextNode);
 
             //Act
