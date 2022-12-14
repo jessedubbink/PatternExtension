@@ -2,7 +2,7 @@
 {
     internal interface IFlyweightPattern
     {
-        bool HasUniqueState();
-        bool HasCacheState();
+        bool hasCollectionOfObjects();
+        bool hasGetFlyweightMethod();
     }
 }

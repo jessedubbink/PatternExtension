@@ -129,6 +129,15 @@
     <value>Type name contains lowercase letters</value>
     <comment>The title of the diagnostic.</comment>
   </data>
+  <data name="FlyweightDescription" xml:space="preserve">
+    <value>Is a flyweight</value>
+  </data>
+  <data name="FlyweightMessage" xml:space="preserve">
+    <value>It seems you have implemented the Flyweight pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/flyweight</value>
+  </data>
+  <data name="FlyweightTitle" xml:space="preserve">
+    <value>Flyweight</value>
+  </data>
   <data name="SingletonDescription" xml:space="preserve">
     <value>Is a singleton</value>
   </data>

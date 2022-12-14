@@ -88,6 +88,33 @@ namespace InspectorPatterns {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is a flyweight.
+        /// </summary>
+        internal static string FlyweightDescription {
+            get {
+                return ResourceManager.GetString("FlyweightDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It seems you have implemented the Flyweight pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/flyweight.
+        /// </summary>
+        internal static string FlyweightMessage {
+            get {
+                return ResourceManager.GetString("FlyweightMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Flyweight.
+        /// </summary>
+        internal static string FlyweightTitle {
+            get {
+                return ResourceManager.GetString("FlyweightTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is a singleton.
         /// </summary>
         internal static string SingletonDescription {
