@@ -17,15 +17,15 @@ using System.Threading;
 namespace InspectorPatterns
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class SingletonPatternAnalyzer : DiagnosticAnalyzer
+    public class FlyweightPatternAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "InspectorPatterns";
 
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
-        private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.SingletonTitle), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.SingletonMessage), Resources.ResourceManager, typeof(Resources));
-        private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.SingletonDescription), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.FlyweightTitle), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.FlyweightMessage), Resources.ResourceManager, typeof(Resources));
+        private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.FlyweightDescription), Resources.ResourceManager, typeof(Resources));
         private const string Category = "Naming";
 
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
@@ -41,75 +41,15 @@ namespace InspectorPatterns
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ClassDeclaration);
         }
-        
+
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            //var classTree = context.Node.SyntaxTree.GetRoot() as CompilationUnitSyntax;
-            //var constructorDeclaration = classTree.DescendantNodes().OfType<ConstructorDeclarationSyntax>().FirstOrDefault();
-            //var variableDeclaration = classTree.DescendantNodes().OfType<FieldDeclarationSyntax>().FirstOrDefault();
+            var analyzer = new DesignPatternAnalyzer(new FlyweightAnalyzer(context));
 
-            //if (constructorDeclaration == null || constructorDeclaration == null)
-            //{
-            //    return;
-            //}
-
-            // if (results.HasPrivateConstructor)
-            //if (!constructorDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
-            //{
-            //    return;
-            //      context.ReportDiagnostic(Diagnostic.Create(SupportedDiagnostics.Rule2, constructorDeclaration.GetLocation()));
-            //}
-
-            //if (variableDeclaration != null && !variableDeclaration.Modifiers.Any(SyntaxKind.PrivateKeyword))
-            //{
-            //    return;
-            //}
-
-            var analyzer = new SingletonAnalyzer(context);
-
-            // HasPrivateContstructor
-            if (true)
+            if (analyzer.Analyze())
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+                context.ReportDiagnostic(Diagnostic.Create(Rule, analyzer.Location));
             }
-
-            // HasGetInstance
-            if (true)
-            {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
-            }
-
-            //context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
-
-        //private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
-        //{
-        //    var parents = new List<ClassSyntaxModel>();
-        //    foreach (var item in node.Ancestors())
-        //    {
-        //        var parent = item as TypeDeclarationSyntax;
-        //        if (parent is InterfaceDeclarationSyntax)
-        //        {
-        //            parents.Add(new ClassSyntaxModel
-        //            {
-        //                Identifier = parent.Identifier.ToString()
-        //            });
-        //        }
-        //        else
-        //        {
-        //            parents.Add(new ClassSyntaxModel
-        //            {
-        //                Identifier = parent.Identifier.ToString()
-        //            });
-        //        }
-                
-        //    }
-
-        //    return new ClassSyntaxModel
-        //    {
-        //        Parents = parents,
-        //        Identifier = node.Identifier.ToString()
-        //    };
-        //}
     }
 }

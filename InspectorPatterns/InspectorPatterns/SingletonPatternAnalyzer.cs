@@ -1,18 +1,14 @@
 ﻿using InspectorPatterns.Core;
 using InspectorPatterns.Core.DesignPatterns.Analyzers;
-using InspectorPatterns.Core.DesignPatterns.Interfaces;
-using InspectorPatterns.Core.Interfaces;
-using InspectorPatterns.Core.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Collections.Immutable;
 
 namespace InspectorPatterns
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class FlyweightPatternAnalyzer : DiagnosticAnalyzer
+    public class SingletonPatternAnalyzer : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "InspectorPatterns";
 
