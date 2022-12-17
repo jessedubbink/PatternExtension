@@ -1,15 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Microsoft.CodeAnalysis.CSharp;
+﻿using Microsoft.CodeAnalysis.CSharp;
 using InspectorPatterns.Core.DesignPatterns.Analyzers;
+using Xunit;
 
 namespace InspectorPatterns.Test.DesignPatternsTests
 {
-    [TestClass]
     public class SingletonUnitTests
     {
         private SingletonAnalyzer _singletonAnalyzer;
 
-        [TestMethod]
+        [Fact]
         public void Test_HasGetInstanceSelfMethod_NoMethods()
         {
             //Arrange
@@ -27,10 +26,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasGetInstanceSelfMethod();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasGetInstanceSelfMethod_NoMethodsWithClassReturnType()
         {
             //Arrange
@@ -53,10 +52,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasGetInstanceSelfMethod();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasGetInstanceSelfMethod_ShouldSucceed()
         {
             //Arrange
@@ -79,10 +78,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasGetInstanceSelfMethod();
 
             //Assert
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateConstructor_NoConstructors()
         {
             //Arrange
@@ -103,10 +102,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateConstructor();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateConstructor_NoPrivateConstructors()
         {
             //Arrange
@@ -129,10 +128,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateConstructor();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateConstructor_ShouldSucceed()
         {
             //Arrange
@@ -155,10 +154,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateConstructor();
 
             //Assert
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateStaticSelfField_NoFields()
         {
             //Arrange
@@ -179,10 +178,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateStaticSelfField();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateStaticSelfField_NoPrivateFields()
         {
             //Arrange
@@ -205,10 +204,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateStaticSelfField();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateStaticSelfField_NoStaticFields()
         {
             //Arrange
@@ -231,10 +230,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateStaticSelfField();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateStaticSelfField_NoReturnTypeClassFields()
         {
             //Arrange
@@ -257,10 +256,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateStaticSelfField();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_HasPrivateStaticSelfField_ShouldSucceed()
         {
             //Arrange
@@ -290,10 +289,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.HasPrivateStaticSelfField();
 
             //Assert
-            Assert.IsTrue(result);
+            Assert.True(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_Analyze_ShouldFail()
         {
             //Arrange
@@ -314,10 +313,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var result = _singletonAnalyzer.Analyze();
 
             //Assert
-            Assert.IsFalse(result);
+            Assert.False(result);
         }
 
-        [TestMethod]
+        [Fact]
         public void Test_Analyze_ShouldSucceed()
         {
             //Arrange
@@ -348,8 +347,8 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var resultLocation = _singletonAnalyzer.GetLocation();
 
             //Assert
-            Assert.IsTrue(result);
-            Assert.IsNotNull(resultLocation);
+            Assert.True(result);
+            Assert.NotNull(resultLocation);
         }
 
         // Test HasGetInstanceSelfMethod()
