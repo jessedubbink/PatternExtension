@@ -44,9 +44,8 @@ namespace InspectorPatterns
         
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var singletonContext = context.Node.SyntaxTree.GetRoot();
-
-            var analyzer = new DesignPatternAnalyzer(new SingletonAnalyzer(singletonContext));
+            var analyzer = new DesignPatternAnalyzer(context);
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer(analyzer.GetContext()));
 
             if (analyzer.Analyze())
             {

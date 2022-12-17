@@ -350,31 +350,5 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             Assert.True(result);
             Assert.NotNull(resultLocation);
         }
-
-        // Test HasGetInstanceSelfMethod()
-        // - Error/ Classtree has no methods
-        // - Error/ Methods return type is not Class type
-        // - Succes/ Method exists and has return type of class
-        // Test HasPrivateConstructor()
-        // - Error/ Classtree has no constructors
-        // - Error/ Constructor is not private
-        // - Succes/ Constructor exists and is private
-        // Test HasPrivateStaticSelfField()
-        // - Error/ Classtree has no fields
-        // - Error/ Field is not private
-        // - Error/ Field is not static
-        // - Error/ Field type is not class
-        // - Succes/ Field exists is private and static and has type of class
-        // Test Analyze()
-        // - Error/ When one check is false
-        // - Succes/ When all checks are true
-        //   * Check if location is set
-
-        // Gezochte situatie
-        // Ik vul een string in dat een class moet representeren
-        // De string wordt omgezet naar een visual studio syntaxtree
-        // De syntaxtree wordt omgezet naar onze datamodel
-        // Met dat datamodel kan ik een niewe design pattern aanmaken
-        // Ik kan dan alle verschillende functionaliteit van de design pattern checken
     }
 }
