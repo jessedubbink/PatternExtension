@@ -47,7 +47,7 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 
                     if (!(method.ReturnType is IdentifierNameSyntax methodReturnType))
                     {
-                        return false;
+                        continue;
                     }
 
                     if (methodReturnType.Identifier.Value.Equals(classDeclaration.Identifier.Value))
@@ -98,7 +98,7 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
 
                 if (!(field.Declaration.Type is IdentifierNameSyntax type))
                 {
-                    return false;
+                    continue;
                 }
 
                 if (field.Modifiers.Any(SyntaxKind.PrivateKeyword) && field.Modifiers.Any(SyntaxKind.StaticKeyword) && type.Identifier.Value.Equals(classDeclaration.Identifier.Value))

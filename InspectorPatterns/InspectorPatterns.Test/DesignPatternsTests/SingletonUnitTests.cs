@@ -66,6 +66,11 @@ namespace InspectorPatterns.Test.DesignPatternsTests
 
                     private Singleton() { }
 
+                    public static string HasNotReturnTypeSelf()
+                    {
+                        return string.Empty;
+                    }
+
                     public static Singleton GetInstance()
                     {
                         return _instance;
@@ -266,8 +271,8 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var correctCode = @"
                 public sealed class Singleton
                 {
+                    private string _testIncorrectType;
                     private static Singleton _instance;
-                    private string _teststring;
 
                     private Singleton() { }
                     private Singleton(string) { }
@@ -279,7 +284,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
 
                     private void check()
                     {
-                        Console.WriteLine(_teststring);
+                        Console.WriteLine(_testIncorrectType);
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
