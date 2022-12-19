@@ -19,7 +19,7 @@ namespace InspectorPatterns
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
     public class SingletonPatternAnalyzer : DiagnosticAnalyzer
     {
-        public const string DiagnosticId = "InspectorPatterns";
+        public const string DiagnosticId = "SingletonPatternAnalyzer";
 
         // You can change these strings in the Resources.resx file. If you do not want your analyzer to be localize-able, you can use regular strings for Title and MessageFormat.
         // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Localizing%20Analyzers.md for more on localization
@@ -44,7 +44,8 @@ namespace InspectorPatterns
         
         private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
         {
-            var analyzer = new DesignPatternAnalyzer(new SingletonAnalyzer(context));
+            var analyzer = new DesignPatternAnalyzer(context);
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer(analyzer.GetContext()));
 
             if (analyzer.Analyze())
             {

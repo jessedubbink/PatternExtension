@@ -1,43 +1,49 @@
 ﻿using InspectorPatterns.Core.Interfaces;
-using InspectorPatterns.Core.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace InspectorPatterns.Core
 {
     public class DesignPatternAnalyzer
     {
-        private IAnalyzer analyzer;
+        private IAnalyzer _analyzer;
+        private SyntaxNode _context;
+
         public Location Location { get; set; }
         //public Results Results { get; set; }
 
-        public DesignPatternAnalyzer() { }
-
-        public DesignPatternAnalyzer(IAnalyzer analyzer)
+        public DesignPatternAnalyzer(SyntaxNodeAnalysisContext context)
         {
-            this.analyzer = analyzer;
+            ConvertContext(context);
+        }
+
+        private void ConvertContext(SyntaxNodeAnalysisContext context)
+        {
+            _context = context.Node.SyntaxTree.GetRoot();
         }
 
         public void SetAnalyzerStrategy(IAnalyzer analyzer)
         {
-            this.analyzer = analyzer;
+            _analyzer = analyzer;
+        }
+
+        public SyntaxNode GetContext()
+        {
+            return _context;
         }
 
         public bool Analyze()
         {
-            if (analyzer == null)
+            if (_analyzer == null)
             {
                 return false;
             }
 
-            var result = analyzer.Analyze();
+            var result = _analyzer.Analyze();
 
             if (result)
             {
-                Location = analyzer.GetLocation();
+                Location = _analyzer.GetLocation();
             }
 
             return result;
