@@ -1,6 +1,12 @@
 name: Run Analyzer.Test tests
 run-name: ${{ github.actor }} is running Unit-tests
-on: [push]
+on:
+  # Run when pull-request is either opened or updated.
+  pull_request:
+    types:
+      - 'opened'
+      - 'reopened'
+      - 'edited'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -16,16 +22,20 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
+        # Restore dependencies.
       - name: Install dependencies
         run: dotnet restore
-
+        # Run build.
+      - name: Build dotnet application
+        run: dotnet build --no-restore
+        # Run tests.
       - name: Test with dotnet
         run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
-
+        # Test result artifact.
       - name: Upload dotnet test results
         uses: actions/upload-artifact@v3
         with:
           name: dotnet-results-${{ matrix.dotnet-version }}
           path: ./InspectorPatterns/TestResults-${{ matrix.dotnet-version }}
-        # Use always() to always run this step to publish test results when there are test failures
+        # Use always() to always run this step to publish test results when there are test failures.
         if: ${{ always() }}
