@@ -42,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: InspectorPattern-0.0.0
-          path: ./InspectorPatterns/InspectorPatterns.Vsix/bin/Release/net472/InspectorPatterns.Vsix.vsix
+          path: ./InspectorPatterns/InspectorPatterns.Vsix/bin/Release/net472/**.vsix
