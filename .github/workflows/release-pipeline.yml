@@ -1,4 +1,4 @@
-name: Run Analyzer.Test tests
+name: Release PatternInspector
 run-name: ${{ github.actor }} is running Unit-tests
 on:
   # Run when pull-request is merged to master.
