@@ -3,10 +3,7 @@ run-name: ${{ github.actor }} is running Unit-tests
 on:
   # Run when pull-request is either opened or updated.
   pull_request:
-    types:
-      - 'opened'
-      - 'reopened'
-      - 'edited'
+    types: [opened,reopened,edited]
 jobs:
   build:
     runs-on: ubuntu-latest
