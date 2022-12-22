@@ -1,6 +1,7 @@
 ﻿using InspectorPatterns.Core.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 
 namespace InspectorPatterns.Core
 {
@@ -9,12 +10,9 @@ namespace InspectorPatterns.Core
         private IAnalyzer _analyzer;
         private SyntaxNode _context;
 
-        public Location Location { get; set; }
-        //public Results Results { get; set; }
-
-        public DesignPatternAnalyzer(SyntaxNodeAnalysisContext context)
+        public void SetAnalyzerStrategy(IAnalyzer analyzer)
         {
-            ConvertContext(context);
+            _analyzer = analyzer;
         }
 
         private void ConvertContext(SyntaxNodeAnalysisContext context)
@@ -22,9 +20,9 @@ namespace InspectorPatterns.Core
             _context = context.Node.SyntaxTree.GetRoot();
         }
 
-        public void SetAnalyzerStrategy(IAnalyzer analyzer)
+        public void SetContext(SyntaxNodeAnalysisContext context)
         {
-            _analyzer = analyzer;
+            ConvertContext(context);
         }
 
         public SyntaxNode GetContext()
@@ -40,11 +38,6 @@ namespace InspectorPatterns.Core
             }
 
             var result = _analyzer.Analyze();
-
-            if (result)
-            {
-                Location = _analyzer.GetLocation();
-            }
 
             return result;
         }

@@ -26,7 +26,7 @@ namespace InspectorPatterns
         private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.SingletonTitle), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.SingletonMessage), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.SingletonDescription), Resources.ResourceManager, typeof(Resources));
-        private const string Category = "Naming";
+        private const string Category = "Singleton";
 
         private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
 
@@ -39,48 +39,89 @@ namespace InspectorPatterns
 
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ClassDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeFieldNode, SyntaxKind.FieldDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeConstructorNode, SyntaxKind.ConstructorDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeMethodNode, SyntaxKind.MethodDeclaration);
         }
-        
-        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
-        {
-            var analyzer = new DesignPatternAnalyzer(context);
-            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer(analyzer.GetContext()));
 
-            if (analyzer.Analyze())
+        private bool hasPrivateStaticSelfField;
+        private bool hasPrivateConstructor;
+        private bool hasGetInstanceSelfMethod;
+        private bool isSingleton;
+
+        private readonly DesignPatternAnalyzer analyzer = new DesignPatternAnalyzer();
+
+        private void AnalyzeMethodNode(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetContext(context);
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasGetInstanceSelfMethod(analyzer.GetContext()));
+
+            if (!analyzer.Analyze())
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, analyzer.Location));
+                hasGetInstanceSelfMethod = false;
+                isSingleton = false;
+
+                return;
+            }
+            
+            hasGetInstanceSelfMethod = true;
+
+            if (!isSingleton)
+            {
+                CheckIfSingleton(context);
             }
         }
 
-        //private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
-        //{
-        //    var parents = new List<ClassSyntaxModel>();
-        //    foreach (var item in node.Ancestors())
-        //    {
-        //        var parent = item as TypeDeclarationSyntax;
-        //        if (parent is InterfaceDeclarationSyntax)
-        //        {
-        //            parents.Add(new ClassSyntaxModel
-        //            {
-        //                Identifier = parent.Identifier.ToString()
-        //            });
-        //        }
-        //        else
-        //        {
-        //            parents.Add(new ClassSyntaxModel
-        //            {
-        //                Identifier = parent.Identifier.ToString()
-        //            });
-        //        }
-                
-        //    }
+        private void AnalyzeConstructorNode(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetContext(context);
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateConstructor(analyzer.GetContext()));
 
-        //    return new ClassSyntaxModel
-        //    {
-        //        Parents = parents,
-        //        Identifier = node.Identifier.ToString()
-        //    };
-        //}
+            if (!analyzer.Analyze())
+            {
+                hasGetInstanceSelfMethod = false;
+                isSingleton = false;
+
+                return;
+            }
+
+            hasPrivateConstructor = true;
+
+            if (!isSingleton)
+            {
+                CheckIfSingleton(context);
+            }
+        }
+
+        private void AnalyzeFieldNode(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetContext(context);
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateStaticSelfField(analyzer.GetContext()));
+
+            if (!analyzer.Analyze())
+            {
+                hasGetInstanceSelfMethod = false;
+                isSingleton = false;
+
+                return;
+            }
+
+            hasPrivateStaticSelfField = true;
+
+            if (!isSingleton)
+            {
+                CheckIfSingleton(context);
+            }
+        }
+
+        private void CheckIfSingleton(SyntaxNodeAnalysisContext context)
+        {
+            if (hasPrivateStaticSelfField && hasPrivateConstructor && hasGetInstanceSelfMethod)
+            {
+                isSingleton = true;
+                Location location = context.Node.GetLocation();// .SyntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().Identifier.GetLocation();
+                context.ReportDiagnostic(Diagnostic.Create(Rule, location));
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace EmulatorProject.DesignPatterns.Singleton
 {
-    public sealed class Singleton
+    public class Singleton
     {
         private static Singleton _instance;
 
@@ -15,5 +15,6 @@
 
             return _instance;
         }
+
     }
 }
