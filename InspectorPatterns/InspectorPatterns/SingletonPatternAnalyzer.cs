@@ -47,7 +47,7 @@ namespace InspectorPatterns
         private bool hasPrivateStaticSelfField;
         private bool hasPrivateConstructor;
         private bool hasGetInstanceSelfMethod;
-        private bool isSingleton;
+        //private bool isSingleton;
 
         private readonly DesignPatternAnalyzer analyzer = new DesignPatternAnalyzer();
 
@@ -59,17 +59,14 @@ namespace InspectorPatterns
             if (!analyzer.Analyze())
             {
                 hasGetInstanceSelfMethod = false;
-                isSingleton = false;
+                //isSingleton = false;
 
                 return;
             }
             
             hasGetInstanceSelfMethod = true;
 
-            if (!isSingleton)
-            {
-                CheckIfSingleton(context);
-            }
+            CheckIfSingleton(context);
         }
 
         private void AnalyzeConstructorNode(SyntaxNodeAnalysisContext context)
@@ -80,17 +77,14 @@ namespace InspectorPatterns
             if (!analyzer.Analyze())
             {
                 hasGetInstanceSelfMethod = false;
-                isSingleton = false;
+                //isSingleton = false;
 
                 return;
             }
 
             hasPrivateConstructor = true;
 
-            if (!isSingleton)
-            {
-                CheckIfSingleton(context);
-            }
+            CheckIfSingleton(context);
         }
 
         private void AnalyzeFieldNode(SyntaxNodeAnalysisContext context)
@@ -101,25 +95,22 @@ namespace InspectorPatterns
             if (!analyzer.Analyze())
             {
                 hasGetInstanceSelfMethod = false;
-                isSingleton = false;
+                //isSingleton = false;
 
                 return;
             }
 
             hasPrivateStaticSelfField = true;
 
-            if (!isSingleton)
-            {
-                CheckIfSingleton(context);
-            }
+            CheckIfSingleton(context);
         }
 
         private void CheckIfSingleton(SyntaxNodeAnalysisContext context)
         {
             if (hasPrivateStaticSelfField && hasPrivateConstructor && hasGetInstanceSelfMethod)
             {
-                isSingleton = true;
-                Location location = context.Node.GetLocation();// .SyntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().Identifier.GetLocation();
+                //isSingleton = true;
+                Location location = context.Node.GetLocation();//.SyntaxTree.GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().Identifier.GetLocation();
                 context.ReportDiagnostic(Diagnostic.Create(Rule, location));
             }
         }
