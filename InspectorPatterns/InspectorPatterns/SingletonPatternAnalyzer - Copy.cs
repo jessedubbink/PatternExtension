@@ -9,7 +9,7 @@ using System.Collections.Immutable;
 namespace InspectorPatterns
 {
     [DiagnosticAnalyzer(LanguageNames.CSharp)]
-    public class SingletonPatternAnalyzer : DiagnosticAnalyzer
+    public class SingletonPatternAnalyzerCopy : DiagnosticAnalyzer
     {
         public const string DiagnosticId = "SingletonPatternAnalyzer";
 
