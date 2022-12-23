@@ -8,26 +8,10 @@ namespace InspectorPatterns.Core
     public class DesignPatternAnalyzer
     {
         private IAnalyzer _analyzer;
-        private SyntaxNode _context;
 
         public void SetAnalyzerStrategy(IAnalyzer analyzer)
         {
             _analyzer = analyzer;
-        }
-
-        private void ConvertContext(SyntaxNodeAnalysisContext context)
-        {
-            _context = context.Node.SyntaxTree.GetRoot();
-        }
-
-        public void SetContext(SyntaxNodeAnalysisContext context)
-        {
-            ConvertContext(context);
-        }
-
-        public SyntaxNode GetContext()
-        {
-            return _context;
         }
 
         public bool Analyze()

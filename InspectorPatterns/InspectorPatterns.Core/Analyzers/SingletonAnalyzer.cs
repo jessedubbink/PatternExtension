@@ -1,11 +1,10 @@
-﻿using InspectorPatterns.Core.DesignPatterns.Interfaces;
-using InspectorPatterns.Core.Interfaces;
+﻿using InspectorPatterns.Core.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.Linq;
 
-namespace InspectorPatterns.Core.DesignPatterns.Analyzers
+namespace InspectorPatterns.Core.Analyzers
 {
     public class SingletonAnalyzer
     {
@@ -71,7 +70,8 @@ namespace InspectorPatterns.Core.DesignPatterns.Analyzers
                 for (int i = 0; i < constructorDeclarations.Count(); i++)
                 {
                     var constructor = constructorDeclarations.ElementAt(i);
-                    if (constructor.Modifiers.Any(SyntaxKind.PrivateKeyword))
+
+                    if (!constructor.Modifiers.Any(SyntaxKind.PublicKeyword) && constructor.Modifiers.Any(SyntaxKind.PrivateKeyword))
                     {
                         return true;
                     }

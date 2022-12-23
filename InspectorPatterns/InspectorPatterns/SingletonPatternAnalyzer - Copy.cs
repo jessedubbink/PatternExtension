@@ -24,7 +24,9 @@ namespace InspectorPatterns
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
 
-        private DesignPatternAnalyzer analyzer;
+        //private bool hasPrivateStaticSelfField, hasPrivateConstructor, hasGetInstanceSelfMethod;
+
+        private DesignPatternAnalyzer analyzer;// = new DesignPatternAnalyzer();
 
         public override void Initialize(AnalysisContext context)
         {
@@ -36,6 +38,14 @@ namespace InspectorPatterns
                 analyzer = new DesignPatternAnalyzer();
             }
 
+            // Reset values
+            //if (hasPrivateStaticSelfField && hasPrivateConstructor && hasGetInstanceSelfMethod)
+            //{
+            //    hasPrivateStaticSelfField = false;
+            //    hasPrivateConstructor = false;
+            //    hasGetInstanceSelfMethod = false;
+            //}
+
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyzeFieldNode, SyntaxKind.FieldDeclaration);
@@ -45,38 +55,65 @@ namespace InspectorPatterns
 
         private void AnalyzeMethodNode(SyntaxNodeAnalysisContext context)
         {
+            //analyzer.SetContext(context);
             analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasGetInstanceSelfMethod(ContextConverter.Convert(context)));
 
             if (!analyzer.Analyze())
             {
+                //hasGetInstanceSelfMethod = false;
+
                 return;
             }
+            
+            //hasGetInstanceSelfMethod = true;
+            //CheckIfSingleton(context);
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
         private void AnalyzeConstructorNode(SyntaxNodeAnalysisContext context)
         {
+            //analyzer.SetContext(context);
             analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateConstructor(ContextConverter.Convert(context)));
 
             if (!analyzer.Analyze())
             {
+                //hasPrivateConstructor = false;
+
                 return;
             }
+
+            //hasPrivateConstructor = true;
+            //CheckIfSingleton(context);
 
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
         private void AnalyzeFieldNode(SyntaxNodeAnalysisContext context)
         {
+            //analyzer.SetContext(context);
             analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateStaticSelfField(ContextConverter.Convert(context)));
 
             if (!analyzer.Analyze())
             {
+                //hasPrivateStaticSelfField = false;
+
                 return;
             }
 
+            //hasPrivateStaticSelfField = true;
+            //CheckIfSingleton(context);
+
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
+
+        //private void CheckIfSingleton(SyntaxNodeAnalysisContext context)
+        //{
+        //    if (hasPrivateStaticSelfField && hasPrivateConstructor && hasGetInstanceSelfMethod)
+        //    {
+        //        Location location = context.Node.GetLocation();
+        //        context.ReportDiagnostic(Diagnostic.Create(Rule, location));
+        //    }
+        //}
     }
 }
