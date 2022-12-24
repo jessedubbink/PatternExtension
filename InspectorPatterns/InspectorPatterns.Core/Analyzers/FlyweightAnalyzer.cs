@@ -5,7 +5,7 @@ using System;
 
 namespace InspectorPatterns.Core.Analyzers
 {
-    public class FlyweightAnalyzer : IAnalyzer, IFlyweightPattern
+    public class FlyweightAnalyzer : IAnalyzer
     {
         private readonly SyntaxNodeAnalysisContext _context;
 
