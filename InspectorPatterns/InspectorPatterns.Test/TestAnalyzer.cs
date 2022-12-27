@@ -10,10 +10,5 @@ namespace InspectorPatterns.Test
         {
             return true;
         }
-
-        public Location GetLocation()
-        {
-            return Location.Create("", new TextSpan(), new LinePositionSpan());
-        }
     }
 }

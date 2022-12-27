@@ -1,13 +1,12 @@
 ﻿using Microsoft.CodeAnalysis.CSharp;
-using InspectorPatterns.Core.DesignPatterns.Analyzers;
 using Xunit;
+using InspectorPatterns.Core;
+using InspectorPatterns.Core.Analyzers;
 
 namespace InspectorPatterns.Test.DesignPatternsTests
 {
     public class SingletonUnitTests
     {
-        private SingletonAnalyzer _singletonAnalyzer;
-
         [Fact]
         public void Test_HasGetInstanceSelfMethod_NoMethods()
         {
@@ -20,10 +19,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     private Singleton() { }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasGetInstanceSelfMethod(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasGetInstanceSelfMethod();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -46,10 +45,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasGetInstanceSelfMethod(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasGetInstanceSelfMethod();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -77,10 +76,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasGetInstanceSelfMethod(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasGetInstanceSelfMethod();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -101,10 +100,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateConstructor(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateConstructor();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -127,10 +126,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateConstructor(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateConstructor();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -153,10 +152,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateConstructor(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateConstructor();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -177,10 +176,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateStaticSelfField();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -203,10 +202,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateStaticSelfField();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -229,10 +228,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateStaticSelfField();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -255,10 +254,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateStaticSelfField();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -288,10 +287,10 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var singletonAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
 
             //Act
-            var result = _singletonAnalyzer.HasPrivateStaticSelfField();
+            var result = singletonAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -312,13 +311,20 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var designPatternAnalyzer = new DesignPatternAnalyzer();
 
             //Act
-            var result = _singletonAnalyzer.Analyze();
+            designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasGetInstanceSelfMethod(contextNode));
+            var hasGetInstanceSelf = designPatternAnalyzer.Analyze();
+
+            designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateConstructor(contextNode));
+            var hasPrivateConstructor = designPatternAnalyzer.Analyze();
+
+            designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode));
+            var hasPrivateStaticSelfField = designPatternAnalyzer.Analyze();
 
             //Assert
-            Assert.False(result);
+            Assert.False(hasGetInstanceSelf && hasPrivateConstructor && hasPrivateStaticSelfField);
         }
 
         [Fact]
@@ -345,15 +351,20 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                     }
                 }";
             var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-            _singletonAnalyzer = new SingletonAnalyzer(contextNode);
+            var designPatternAnalyzer = new DesignPatternAnalyzer();
 
             //Act
-            var result = _singletonAnalyzer.Analyze();
-            var resultLocation = _singletonAnalyzer.GetLocation();
+            designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasGetInstanceSelfMethod(contextNode));
+            var hasGetInstanceSelf = designPatternAnalyzer.Analyze();
+
+            designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateConstructor(contextNode));
+            var hasPrivateConstructor = designPatternAnalyzer.Analyze();
+
+            designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode));
+            var hasPrivateStaticSelfField = designPatternAnalyzer.Analyze();
 
             //Assert
-            Assert.True(result);
-            Assert.NotNull(resultLocation);
+            Assert.True(hasGetInstanceSelf && hasPrivateConstructor && hasPrivateStaticSelfField);
         }
     }
 }

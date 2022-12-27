@@ -1,18 +1,10 @@
 ﻿using InspectorPatterns.Core;
-using InspectorPatterns.Core.DesignPatterns.Analyzers;
-using InspectorPatterns.Core.DesignPatterns.Interfaces;
-using InspectorPatterns.Core.Interfaces;
-using InspectorPatterns.Core.Models;
+using InspectorPatterns.Core.Analyzers;
+using InspectorPatterns.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
-using System;
-using System.Collections.Generic;
 using System.Collections.Immutable;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Threading;
 
 namespace InspectorPatterns
 {
@@ -26,61 +18,65 @@ namespace InspectorPatterns
         private static readonly LocalizableString Title = new LocalizableResourceString(nameof(Resources.SingletonTitle), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString MessageFormat = new LocalizableResourceString(nameof(Resources.SingletonMessage), Resources.ResourceManager, typeof(Resources));
         private static readonly LocalizableString Description = new LocalizableResourceString(nameof(Resources.SingletonDescription), Resources.ResourceManager, typeof(Resources));
-        private const string Category = "Naming";
+        private const string Category = "Singleton";
 
-        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Warning, isEnabledByDefault: true, description: Description);
+        private static readonly DiagnosticDescriptor Rule = new DiagnosticDescriptor(DiagnosticId, Title, MessageFormat, Category, DiagnosticSeverity.Info, isEnabledByDefault: true, description: Description);
 
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics { get { return ImmutableArray.Create(Rule); } }
+
+        private DesignPatternAnalyzer analyzer;
 
         public override void Initialize(AnalysisContext context)
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
             context.EnableConcurrentExecution();
 
+            if (analyzer == null)
+            {
+                analyzer = new DesignPatternAnalyzer();
+            }
+
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
-            context.RegisterSyntaxNodeAction(AnalyzeNode, SyntaxKind.ClassDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeFieldNode, SyntaxKind.FieldDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeConstructorNode, SyntaxKind.ConstructorDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeMethodNode, SyntaxKind.MethodDeclaration);
         }
-        
-        private static void AnalyzeNode(SyntaxNodeAnalysisContext context)
+
+        private void AnalyzeMethodNode(SyntaxNodeAnalysisContext context)
         {
-            var analyzer = new DesignPatternAnalyzer(context);
-            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer(analyzer.GetContext()));
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasGetInstanceSelfMethod(ContextConverter.Convert(context)));
 
-            if (analyzer.Analyze())
+            if (!analyzer.Analyze())
             {
-                context.ReportDiagnostic(Diagnostic.Create(Rule, analyzer.Location));
+                return;
             }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
-        //private static ClassSyntaxModel TypeDeclarationSyntax_To_ClassSyntaxModel(TypeDeclarationSyntax node)
-        //{
-        //    var parents = new List<ClassSyntaxModel>();
-        //    foreach (var item in node.Ancestors())
-        //    {
-        //        var parent = item as TypeDeclarationSyntax;
-        //        if (parent is InterfaceDeclarationSyntax)
-        //        {
-        //            parents.Add(new ClassSyntaxModel
-        //            {
-        //                Identifier = parent.Identifier.ToString()
-        //            });
-        //        }
-        //        else
-        //        {
-        //            parents.Add(new ClassSyntaxModel
-        //            {
-        //                Identifier = parent.Identifier.ToString()
-        //            });
-        //        }
-                
-        //    }
+        private void AnalyzeConstructorNode(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateConstructor(ContextConverter.Convert(context)));
 
-        //    return new ClassSyntaxModel
-        //    {
-        //        Parents = parents,
-        //        Identifier = node.Identifier.ToString()
-        //    };
-        //}
+            if (!analyzer.Analyze())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+        }
+
+        private void AnalyzeFieldNode(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateStaticSelfField(ContextConverter.Convert(context)));
+
+            if (!analyzer.Analyze())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+        }
     }
 }

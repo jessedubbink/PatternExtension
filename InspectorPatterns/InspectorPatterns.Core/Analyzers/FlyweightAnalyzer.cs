@@ -1,13 +1,11 @@
-﻿using InspectorPatterns.Core.DesignPatterns.Interfaces;
-using InspectorPatterns.Core.Interfaces;
-using InspectorPatterns.Core.Models;
+﻿using InspectorPatterns.Core.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
 
-namespace InspectorPatterns.Core.DesignPatterns.Analyzers
+namespace InspectorPatterns.Core.Analyzers
 {
-    public class FlyweightAnalyzer : IAnalyzer, IFlyweightPattern
+    public class FlyweightAnalyzer : IAnalyzer
     {
         private readonly SyntaxNodeAnalysisContext _context;
 
