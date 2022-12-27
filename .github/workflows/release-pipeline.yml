@@ -44,6 +44,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: InspectorPattern-0.0.0
-          path: './'
+          path: '*.vsix'
         # Use always() to always run this step to publish test results when there are test failures.
         if: ${{ always() }}
