@@ -61,6 +61,33 @@ namespace InspectorPatterns {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is a Factory Method Pattern.
+        /// </summary>
+        internal static string FactoryMethodDescription {
+            get {
+                return ResourceManager.GetString("FactoryMethodDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It seems you have implemented the Factory Method pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/factory-method.
+        /// </summary>
+        internal static string FactoryMethodMessage {
+            get {
+                return ResourceManager.GetString("FactoryMethodMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Singleton.
+        /// </summary>
+        internal static string FactoryMethodTitle {
+            get {
+                return ResourceManager.GetString("FactoryMethodTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is a singleton.
         /// </summary>
         internal static string SingletonDescription {
