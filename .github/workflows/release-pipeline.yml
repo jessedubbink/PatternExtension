@@ -16,19 +16,19 @@ jobs:
         dotnet-version: ['2.0.0']
     steps:
       - uses: actions/checkout@v3
-      - name: Setup dotnet
-        uses: actions/setup-dotnet@v3
+      - name: Setup MsBuild
+        uses: microsoft/setup-msbuild@v1.0.2
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
         # Restore dependencies.
       - name: Install dependencies
-        run: dotnet restore
+        run: msbuild restore
         # Run build in Release config.
-      - name: Build dotnet application
-        run: dotnet build -c Release --no-restore
+      - name: Build MsBuild application
+        run: msbuild /t:Rebuild
         # Run tests.
       - name: Test with dotnet
-        run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+        run: msbuild test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
         # Test result artifact.
       - name: Upload dotnet test results
         uses: actions/upload-artifact@v3
