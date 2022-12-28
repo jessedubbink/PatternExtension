@@ -122,16 +122,27 @@ namespace InspectorPatterns.Core.Analyzers
         public class IsProductInterface : IAnalyzer
         {
             private readonly SyntaxNodeAnalysisContext _context;
+            private readonly string _identifierValue;
 
             public IsProductInterface(SyntaxNodeAnalysisContext context)
             {
                 _context = context;
+
+                InterfaceDeclarationSyntax interfaceSyntax = (InterfaceDeclarationSyntax)_context.Node;
+                _identifierValue = (string)interfaceSyntax.Identifier.Value;
             }
 
-            // Returns true if Product interface is used as a return type with Factory Method declaration, for example: IProduct FactoryMethod(). Otherwise false
+            public IsProductInterface(SyntaxNodeAnalysisContext context, string identifierValue)
+            {
+                _context = context;
+                _identifierValue = identifierValue;
+            }
+
+
+            // Returns true if interface is used as a return type with Factory Method declaration, for example: IProduct FactoryMethod(). Otherwise false
             public bool Analyze()
             {
-                InterfaceDeclarationSyntax interfaceSyntax = (InterfaceDeclarationSyntax)_context.Node;
+                //InterfaceDeclarationSyntax interfaceSyntax = (InterfaceDeclarationSyntax)_context.Node;
 
                 //var x = interfaceSyntax.SyntaxTree.GetCompilationUnitRoot();
 
@@ -184,7 +195,7 @@ namespace InspectorPatterns.Core.Analyzers
                             continue;
                         }
 
-                        if (methodReturnType.Identifier.Value.Equals(interfaceSyntax.Identifier.Value))
+                        if (methodReturnType.Identifier.Value.Equals(_identifierValue))
                         {
                             return true;
                         }
@@ -235,13 +246,20 @@ namespace InspectorPatterns.Core.Analyzers
                 _context = context;
             }
 
+            // Returns true if class implements a Product interface.
             public bool Analyze()
             {
                 ClassDeclarationSyntax classSyntax = (ClassDeclarationSyntax)_context.Node;
                 
-                foreach (var type in classSyntax.BaseList.Types)
+                foreach (var item in classSyntax.BaseList.Types)
                 {
+                    var type = (IdentifierNameSyntax)item.Type;
+                    var factoryMethodAnalyzer = new FactoryMethodAnalyzer.IsProductInterface(_context, type.Identifier.Value.ToString());
 
+                    if (factoryMethodAnalyzer.Analyze())
+                    {
+                        return true;
+                    }
                 }
 
                 return false;
