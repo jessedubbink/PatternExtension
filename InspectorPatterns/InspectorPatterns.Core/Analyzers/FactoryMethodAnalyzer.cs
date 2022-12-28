@@ -11,28 +11,8 @@ using Microsoft.CodeAnalysis.Diagnostics;
 
 namespace InspectorPatterns.Core.Analyzers
 {
-    public class FactoryMethodAnalyzer : IAnalyzer
+    public class FactoryMethodAnalyzer
     {
-        private readonly SyntaxNode _classTree;
-
-        public FactoryMethodAnalyzer(SyntaxNode context)
-        {
-            _classTree = context;
-        }
-
-        public bool Analyze()
-        {
-            //var methodDeclarations = _classTree.DescendantNodes().OfType<MethodDeclarationSyntax>();
-            //foreach (var methodDecleration in methodDeclarations)
-            //{
-            //    var isFactoryMethod = IsFactoryMethod(methodDecleration);
-            //}
-            
-
-            return true;
-        }
-
-        // Returns true if the member is a factory method, false otherwise
         public class IsFactoryMethod : IAnalyzer
         {
             private readonly SyntaxNodeAnalysisContext _context;
@@ -42,6 +22,7 @@ namespace InspectorPatterns.Core.Analyzers
                 _context = context;
             }
 
+            // Returns true if the member is a factory method, false otherwise
             public bool Analyze()
             {
                 MethodDeclarationSyntax methodSyntax = (MethodDeclarationSyntax)_context.Node;
@@ -102,7 +83,6 @@ namespace InspectorPatterns.Core.Analyzers
             }
         }
 
-        // Returns true if the node uses the factory method to create objects, false otherwise
         public class UsesFactoryMethod : IAnalyzer
         {
             private readonly SyntaxNodeAnalysisContext _context;
@@ -112,6 +92,7 @@ namespace InspectorPatterns.Core.Analyzers
                 _context = context;
             }
 
+            // Returns true if the node uses the factory method to create objects, false otherwise
             public bool Analyze()
             {
                 MethodDeclarationSyntax methodSyntax = (MethodDeclarationSyntax)_context.Node;
@@ -127,7 +108,7 @@ namespace InspectorPatterns.Core.Analyzers
                     // Alternatively, you could also check for use of reflection to create instances of classes
                 }
 
-                // Check if the method body contains a "new" expression
+                // Return false if the method body does not contains a "new" expression, continue otherwise.
                 if (!methodSyntax.Body.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any())
                 {
                     // This method may belong to a subclass that implements a factory method
@@ -137,6 +118,136 @@ namespace InspectorPatterns.Core.Analyzers
                 return true;
             }
         }
+
+        public class IsProductInterface : IAnalyzer
+        {
+            private readonly SyntaxNodeAnalysisContext _context;
+
+            public IsProductInterface(SyntaxNodeAnalysisContext context)
+            {
+                _context = context;
+            }
+
+            // Returns true if Product interface is used as a return type with Factory Method declaration, for example: IProduct FactoryMethod(). Otherwise false
+            public bool Analyze()
+            {
+                InterfaceDeclarationSyntax interfaceSyntax = (InterfaceDeclarationSyntax)_context.Node;
+
+                //var x = interfaceSyntax.SyntaxTree.GetCompilationUnitRoot();
+
+                //var y = _context.Compilation.References;
+
+                ////foreach (var syntaxTree in _context.Compilation.SyntaxTrees)
+                ////{
+                ////    SemanticModel model = _context.Compilation.GetSemanticModel(syntaxTree);
+                ////    var symbol = _context.Compilation.GetSymbolsWithName(interfaceSyntax.Identifier.Text).First();
+                ////    //var symbol = model.GetSymbolInfo(_context.Node).Symbol;
+                ////    var t = symbol?.DeclaringSyntaxReferences;
+                ////}
+                //var semanticModel = _context.Compilation.GetSemanticModel(_context.Node.SyntaxTree);
+                //var clssymbol = semanticModel.GetDeclaredSymbol(_context.Node);
+
+                //var interfaces = clssymbol.Locations;
+
+                //var symbol = _context.Compilation.GetSymbolsWithName(interfaceSyntax.Identifier.Text).First();
+                ////var symbol = model.GetSymbolInfo(_context.Node).Symbol;
+                //var t = symbol?.DeclaringSyntaxReferences;
+
+                ////symbol
+
+                ////if (x != null)
+                ////{
+                ////    return false;
+                ////}
+
+
+                //if (!ProductInterfaceUsedAsReturnTypeWithFactoryMethodDeclaration(interfaceSyntax.Identifier.Value))
+                //{
+                //    return false;
+                //}
+
+                foreach (var syntaxTree in _context.Compilation.SyntaxTrees)
+                {
+                    var classDeclarations = syntaxTree.GetRoot().DescendantNodesAndSelf(n => n is CompilationUnitSyntax || n is MemberDeclarationSyntax).OfType<ClassDeclarationSyntax>();
+
+                    if (!classDeclarations.Any())
+                    {
+                        continue;
+                    }
+
+                    var methodDeclarations = classDeclarations.First().DescendantNodes().OfType<MethodDeclarationSyntax>();
+
+                    foreach (var method in methodDeclarations)
+                    {
+                        if (!(method.ReturnType is IdentifierNameSyntax methodReturnType))
+                        {
+                            continue;
+                        }
+
+                        if (methodReturnType.Identifier.Value.Equals(interfaceSyntax.Identifier.Value))
+                        {
+                            return true;
+                        }
+                    }
+                }
+
+                return false;
+            }
+
+            //// Returns true if Product interface is used as a return type with Factory Method declaration, for example: IProduct FactoryMethod(). Otherwise false
+            //public bool ProductInterfaceUsedAsReturnTypeWithFactoryMethodDeclaration(object value)
+            //{
+            //    foreach (var syntaxTree in _context.Compilation.SyntaxTrees)
+            //    {
+            //        var classDeclarations = syntaxTree.GetRoot().DescendantNodesAndSelf(n => n is CompilationUnitSyntax || n is MemberDeclarationSyntax).OfType<ClassDeclarationSyntax>();
+                    
+            //        if (!classDeclarations.Any())
+            //        {
+            //            continue;
+            //        }
+
+            //        var methodDeclarations = classDeclarations.First().DescendantNodes().OfType<MethodDeclarationSyntax>();
+
+            //        foreach (var method in methodDeclarations)
+            //        {
+            //            if (!(method.ReturnType is IdentifierNameSyntax methodReturnType))
+            //            {
+            //                continue;
+            //            }
+
+            //            if (methodReturnType.Identifier.Value.Equals(value))
+            //            {
+            //                return true;
+            //            }
+            //        }                    
+            //    }
+
+            //    return false;
+            //}
+        }
+
+        public class IsConcreteProduct : IAnalyzer
+        {
+            private readonly SyntaxNodeAnalysisContext _context;
+
+            public IsConcreteProduct(SyntaxNodeAnalysisContext context)
+            {
+                _context = context;
+            }
+
+            public bool Analyze()
+            {
+                ClassDeclarationSyntax classSyntax = (ClassDeclarationSyntax)_context.Node;
+                
+                foreach (var type in classSyntax.BaseList.Types)
+                {
+
+                }
+
+                return false;
+            }
+        }
+
 
         /// <summary>
         /// 

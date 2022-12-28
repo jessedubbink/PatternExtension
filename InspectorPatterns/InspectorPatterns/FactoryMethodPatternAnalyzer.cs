@@ -44,13 +44,38 @@ namespace InspectorPatterns
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             //context.RegisterSyntaxNodeAction(AnalyzeFieldNode, SyntaxKind.FieldDeclaration);
-            //context.RegisterSyntaxNodeAction(AnalyzeConstructorNode, SyntaxKind.ConstructorDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeMethodNode_For_IsFactoryMethod, SyntaxKind.MethodDeclaration);
-            context.RegisterSyntaxNodeAction(AnalyzeMethodNode_For_UsesFactoryMethod, SyntaxKind.MethodDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeNode_For_IsProductInterface, SyntaxKind.InterfaceDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeNode_For_IsFactoryMethod, SyntaxKind.MethodDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeNode_For_UsesFactoryMethod, SyntaxKind.MethodDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeNode_For_IsConcreteProduct, SyntaxKind.ClassDeclaration);
             //context.RegisterSyntaxNodeAction(Test, SyntaxKind.ClassDeclaration);
         }
 
-        private void AnalyzeMethodNode_For_UsesFactoryMethod(SyntaxNodeAnalysisContext context)
+        private void AnalyzeNode_For_IsConcreteProduct(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetAnalyzerStrategy(new FactoryMethodAnalyzer.IsConcreteProduct(context));
+
+            if (!analyzer.Analyze())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+        }
+
+        private void AnalyzeNode_For_IsProductInterface(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetAnalyzerStrategy(new FactoryMethodAnalyzer.IsProductInterface(context));
+
+            if (!analyzer.Analyze())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+        }
+
+        private void AnalyzeNode_For_UsesFactoryMethod(SyntaxNodeAnalysisContext context)
         {
             analyzer.SetAnalyzerStrategy(new FactoryMethodAnalyzer.UsesFactoryMethod(context));
 
@@ -62,7 +87,7 @@ namespace InspectorPatterns
             context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
-        private void AnalyzeMethodNode_For_IsFactoryMethod(SyntaxNodeAnalysisContext context)
+        private void AnalyzeNode_For_IsFactoryMethod(SyntaxNodeAnalysisContext context)
         {
             analyzer.SetAnalyzerStrategy(new FactoryMethodAnalyzer.IsFactoryMethod(context));
 

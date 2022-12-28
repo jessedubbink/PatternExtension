@@ -79,7 +79,7 @@ namespace InspectorPatterns {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Singleton.
+        ///   Looks up a localized string similar to Factory Method.
         /// </summary>
         internal static string FactoryMethodTitle {
             get {

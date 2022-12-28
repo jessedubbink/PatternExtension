@@ -124,7 +124,7 @@
     <value>It seems you have implemented the Factory Method pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/factory-method</value>
   </data>
   <data name="FactoryMethodTitle" xml:space="preserve">
-    <value>Singleton</value>
+    <value>Factory Method</value>
   </data>
   <data name="SingletonDescription" xml:space="preserve">
     <value>Is a singleton</value>
