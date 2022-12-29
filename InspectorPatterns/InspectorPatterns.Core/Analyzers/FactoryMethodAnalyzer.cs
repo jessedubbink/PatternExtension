@@ -13,44 +13,40 @@ namespace InspectorPatterns.Core.Analyzers
 {
     public class FactoryMethodAnalyzer
     {
-        public class IsFactoryMethod : IAnalyzer
+        public class IsAbstractFactoryMethod : IAnalyzer
         {
             private readonly SyntaxNodeAnalysisContext _context;
 
-            public IsFactoryMethod(SyntaxNodeAnalysisContext context)
+            public IsAbstractFactoryMethod(SyntaxNodeAnalysisContext context)
             {
                 _context = context;
             }
 
-            // Returns true if the member is a factory method, false otherwise
+            // Returns true if the member is an abstract factory method, false otherwise
             public bool Analyze()
             {
-                MethodDeclarationSyntax methodSyntax = (MethodDeclarationSyntax)_context.Node;
-                // Check if method is abstract and return type is not void
-                if (!methodSyntax.Modifiers.Any(SyntaxKind.AbstractKeyword) && !methodSyntax.Modifiers.Any(SyntaxKind.VoidKeyword))
+                MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)_context.Node;
+                // Returns false if method is not abstract
+                if (!methodDeclaration.Modifiers.Any(SyntaxKind.AbstractKeyword))
                 {
                     return false;
                 }
 
-                // Check if the method creates objects and delegates object creation to subclasses
-                // Check if the method is abstract and has a return type that is not void.
-                if (
-                    !((methodSyntax.ReturnType.GetType() != typeof(PredefinedTypeSyntax))
-                    && methodSyntax.Modifiers.Any(SyntaxKind.AbstractKeyword)
-                    && !methodSyntax.Modifiers.Any(SyntaxKind.VoidKeyword))
-                    )
+                // Returns false if method creates predefined objects like: string, int, bool, void etc.
+                if (methodDeclaration.ReturnType.GetType() == typeof(PredefinedTypeSyntax))
                 {
                     return false;
-
-                    // Alternatively, you could also check for use of reflection to create instances of classes
                 }
 
-                // Check if the method does not has a body, otherwise check if body is empty
-                if (methodSyntax.Body == null || !methodSyntax.Body.DescendantNodes().Any())
-                {
-                    // This method may be a abstract factory method
-                    return true;
-                }
+                // TODO:
+                // Check if returntype is Product Interface
+
+                //// Check if the method does has a body and if body is empty
+                //if (methodDeclaration.Body != null && methodDeclaration.Body.DescendantNodes().Any())
+                //{
+                //    // This method may be a abstract factory method
+                //    return false;
+                //}
 
 
                 //var methodDeclarations = _context.DescendantNodes().OfType<MethodDeclarationSyntax>();
@@ -79,15 +75,15 @@ namespace InspectorPatterns.Core.Analyzers
                 //    return false;
                 //}
 
-                return false;
+                return true;
             }
         }
 
-        public class UsesFactoryMethod : IAnalyzer
+        public class OverridesAbstractFactoryMethod : IAnalyzer
         {
             private readonly SyntaxNodeAnalysisContext _context;
 
-            public UsesFactoryMethod(SyntaxNodeAnalysisContext context)
+            public OverridesAbstractFactoryMethod(SyntaxNodeAnalysisContext context)
             {
                 _context = context;
             }
@@ -95,13 +91,13 @@ namespace InspectorPatterns.Core.Analyzers
             // Returns true if the node uses the factory method to create objects, false otherwise
             public bool Analyze()
             {
-                MethodDeclarationSyntax methodSyntax = (MethodDeclarationSyntax)_context.Node;
+                MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)_context.Node;
 
                 // Check if the method overrides an abstract method and has a return type that is not void.
                 if (
-                    !(methodSyntax.ReturnType.GetType() != typeof(PredefinedTypeSyntax)
-                    && methodSyntax.Modifiers.Any(SyntaxKind.OverrideKeyword)
-                    && !methodSyntax.Modifiers.Any(SyntaxKind.VoidKeyword))
+                    !(methodDeclaration.ReturnType.GetType() != typeof(PredefinedTypeSyntax)
+                    && methodDeclaration.Modifiers.Any(SyntaxKind.OverrideKeyword)
+                    && !methodDeclaration.Modifiers.Any(SyntaxKind.VoidKeyword))
                     )
                 {
                     return false;
@@ -109,7 +105,7 @@ namespace InspectorPatterns.Core.Analyzers
                 }
 
                 // Return false if the method body does not contains a "new" expression, continue otherwise.
-                if (!methodSyntax.Body.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any())
+                if (!methodDeclaration.Body.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any())
                 {
                     // This method may belong to a subclass that implements a factory method
                     return false;
@@ -249,9 +245,14 @@ namespace InspectorPatterns.Core.Analyzers
             // Returns true if class implements a Product interface.
             public bool Analyze()
             {
-                ClassDeclarationSyntax classSyntax = (ClassDeclarationSyntax)_context.Node;
-                
-                foreach (var item in classSyntax.BaseList.Types)
+                ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)_context.Node;
+
+                if (classDeclaration.BaseList == null)
+                {
+                    return false;
+                }
+
+                foreach (var item in classDeclaration.BaseList.Types)
                 {
                     var type = (IdentifierNameSyntax)item.Type;
                     var factoryMethodAnalyzer = new FactoryMethodAnalyzer.IsProductInterface(_context, type.Identifier.Value.ToString());
