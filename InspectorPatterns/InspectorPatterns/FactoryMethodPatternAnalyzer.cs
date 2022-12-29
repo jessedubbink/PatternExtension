@@ -50,13 +50,20 @@ namespace InspectorPatterns
             context.RegisterSyntaxNodeAction(AnalyzeNode_For_OverridesAbstractFactoryMethod, SyntaxKind.MethodDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeNode_For_IsConcreteProduct, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeNode_For_Test, SyntaxKind.LocalDeclarationStatement);
-            context.RegisterSyntaxNodeAction(AnalyzeNode_For_Property, SyntaxKind.PropertyDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeNode_For_DeclarationWithFactoryMethod, SyntaxKind.LocalDeclarationStatement);
             //context.RegisterSyntaxNodeAction(Test, SyntaxKind.ClassDeclaration);
         }
 
-        private void AnalyzeNode_For_Property(SyntaxNodeAnalysisContext obj)
+        private void AnalyzeNode_For_DeclarationWithFactoryMethod(SyntaxNodeAnalysisContext context)
         {
-            throw new NotImplementedException();
+            analyzer.SetAnalyzerStrategy(new FactoryMethodAnalyzer.DeclarationWithFactoryMethod(context));
+
+            if (!analyzer.Analyze())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
         private void AnalyzeNode_For_Test(SyntaxNodeAnalysisContext obj)

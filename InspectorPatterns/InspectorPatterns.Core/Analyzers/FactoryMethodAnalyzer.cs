@@ -242,7 +242,7 @@ namespace InspectorPatterns.Core.Analyzers
                 _context = context;
             }
 
-            // Returns true if class implements a Product interface.
+            // Returns true if class implements a "Product" interface.
             public bool Analyze()
             {
                 ClassDeclarationSyntax classDeclaration = (ClassDeclarationSyntax)_context.Node;
@@ -267,6 +267,23 @@ namespace InspectorPatterns.Core.Analyzers
             }
         }
 
+        public class DeclarationWithFactoryMethod : IAnalyzer
+        {
+            private readonly SyntaxNodeAnalysisContext _context;
+
+            public DeclarationWithFactoryMethod(SyntaxNodeAnalysisContext context)
+            {
+                _context = context;
+            }
+
+            // Returns true if object creation is achieved by using a Factory Method, otherwise false.
+            public bool Analyze()
+            {
+                var x = _context.Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
+
+                return true;
+            }
+        }
 
         /// <summary>
         /// 
