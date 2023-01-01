@@ -93,24 +93,21 @@ namespace InspectorPatterns.Core.Analyzers
             {
                 MethodDeclarationSyntax methodDeclaration = (MethodDeclarationSyntax)_context.Node;
 
-                // Check if the method overrides an abstract method and has a return type that is not void.
-                if (
-                    !(methodDeclaration.ReturnType.GetType() != typeof(PredefinedTypeSyntax)
-                    && methodDeclaration.Modifiers.Any(SyntaxKind.OverrideKeyword)
-                    && !methodDeclaration.Modifiers.Any(SyntaxKind.VoidKeyword))
-                    )
+                // Returns false if the method returns a predefined returntype, like: string, int, bool, void etc. and/or does not have an override modifier.
+                if (methodDeclaration.ReturnType.GetType() == typeof(PredefinedTypeSyntax) || !methodDeclaration.Modifiers.Any(SyntaxKind.OverrideKeyword))
                 {
                     return false;
-                    // Alternatively, you could also check for use of reflection to create instances of classes
                 }
 
-                // Return false if the method body does not contains a "new" expression, continue otherwise.
+                if (methodDeclaration.Body == null) return false;
+
+                // Return false if the method body does not contains a "new" expression.
                 if (!methodDeclaration.Body.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().Any())
                 {
-                    // This method may belong to a subclass that implements a factory method
                     return false;
                 }
 
+                // Node may belong to a subclass that implements a factory method
                 return true;
             }
         }
@@ -279,8 +276,60 @@ namespace InspectorPatterns.Core.Analyzers
             // Returns true if object creation is achieved by using a Factory Method, otherwise false.
             public bool Analyze()
             {
-                var x = _context.Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
+                var localDeclaration = (LocalDeclarationStatementSyntax)_context.Node;
+                var localSementicModel = _context.Compilation.GetSemanticModel(_context.Node.SyntaxTree);
+                //var x = localSementicModel.GetDeclaredSymbol(localDeclaration.Declaration);//.Variables.First();
+                var localDeclaredSymbol = (ILocalSymbol)localSementicModel.GetDeclaredSymbol(localDeclaration.Declaration.Variables.First());
+                //var localVariable = localDeclaredSymbol as ILocalSymbol;
 
+                // Return false if the Type of local variable is a predefined object, like: string, int, bool, void etc.
+                if (localDeclaredSymbol.Type.GetType() == typeof(PredefinedTypeSyntax))
+                {
+                    return false;
+                }
+
+                //var invocationExpressions = _context.Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
+                // The method that is used for declaring the variable.
+                var invocationExpressions = _context.Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
+                if (!invocationExpressions.Any())
+                {
+                    return false;
+                }
+                // Name of the method.
+                var identifierName = invocationExpressions.First().DescendantNodes().OfType<IdentifierNameSyntax>().First();
+                // Filter the Syntax Tree where the abstract method originally is declared. 
+                var syntaxTrees = _context.Compilation.SyntaxTrees
+                    .Where(s => s.GetRoot()
+                        .DescendantNodes()
+                        .OfType<MethodDeclarationSyntax>()
+                        .Any(m => m.Identifier.Value == identifierName.Identifier.Value && m.Modifiers.Any(SyntaxKind.AbstractKeyword)));
+                //var h = syntaxTrees.Where(s => s.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().Where(m => m.Identifier.Value == y.Identifier.Value) != null).Select(n => n.GetRoot());
+                //var p = syntaxTrees.Select(s => s.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()).Where(m => m.Any(n => n.Identifier.Value == y.Identifier.Value));
+                //var p = syntaxTrees.Select(s => s.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>()).Where(m => m.Any(n => n.Identifier.Value == y.Identifier.Value && n.ReturnType.GetType() != typeof(PredefinedTypeSyntax) && n.Modifiers.Any(SyntaxKind.AbstractKeyword)));
+                //var l = syntaxTrees.Where(s => s.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().Any(m => m.Identifier.Value == y.Identifier.Value && m.Modifiers.Any(SyntaxKind.AbstractKeyword)));
+                // .Where(n => n.Identifier.Value == y.Identifier.Value)
+                //.Select(n => n.Identifier.Value == y.Identifier.Value)
+
+                if (!syntaxTrees.Any()) return false;
+
+                foreach (var syntaxTree in syntaxTrees)
+                {
+                    var methodDeclarations = syntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>();
+                    var sModel = _context.Compilation.GetSemanticModel(syntaxTree);
+
+                    if (!methodDeclarations.Any()) continue;
+
+                    var methodDeclaration = methodDeclarations.Where(m => m.Identifier.Value == identifierName.Identifier.Value).First();
+                    var declaredSymbol = sModel.GetDeclaredSymbol(methodDeclaration); ;// .GetSymbolInfo(_context.Node).Symbol;// .GetDeclaredSymbol(creator);
+
+                    // Return false if the type of the variable is a predefined object, like: string, int, bool, void etc.
+                    if (declaredSymbol.ReturnType.GetType() == typeof(PredefinedTypeSyntax))
+                    {
+                        return false;
+                    }
+                }
+
+                // Object creation is achieved by using a Factory Method.
                 return true;
             }
         }
