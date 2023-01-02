@@ -44,28 +44,33 @@ namespace InspectorPatterns.Core.Analyzers
                     {
                         // gets declared classes
                         var classDeclarations = klass.GetRoot().DescendantNodesAndSelf(n => n is CompilationUnitSyntax || n is MemberDeclarationSyntax).OfType<ClassDeclarationSyntax>();
-                        var classDeclarationBaseList = classDeclarations.First().BaseList;
-                        if (null != classDeclarationBaseList)
-                        {
-                            var classListDeclarationTypes = classDeclarationBaseList.Types;
-                            foreach (var classDeclarationType in classListDeclarationTypes)
-                            {
-                                var type = (IdentifierNameSyntax)classDeclarationType.Type;
-                                // checks if current interface is same as implemented interface of declared class in project
-                                if ((IdentifierNameSyntax)implementedInterface.Type != type)
-                                {
-                                    continue;
-                                }
 
+                        try
+                        {
+                            var classDeclarationBaseList = classDeclarations.First().BaseList;
+                            if (null != classDeclarationBaseList)
+                            {
+                                var classListDeclarationTypes = classDeclarationBaseList.Types;
+                                foreach (var classDeclarationType in classListDeclarationTypes)
+                                {
+                                    var type = (IdentifierNameSyntax)classDeclarationType.Type;
+                                    // checks if current interface is same as implemented interface of declared class in project
+                                    if ((IdentifierNameSyntax)implementedInterface.Type != type)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        _identifierValue = type.ToString();
+                                    }
+
+
+                                }
                             }
-                        }
-                        //klass.GetRoot().
+                        } catch(System.InvalidOperationException) { }
                     }
                 }
-              
-         /*       _identifierValue = (string)classSyntax.Identifier.Value;
-                var fieldDeclarations = _classTree.DescendantNodes().OfType<interfaceSyntax.Identifier.Value>();
-         */
+
                 return true;
             }
 

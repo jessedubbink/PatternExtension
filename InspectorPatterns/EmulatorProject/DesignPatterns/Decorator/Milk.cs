@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using EmulatorProject.DesignPatterns.Decorator
+using EmulatorProject.DesignPatterns.Decorator;
 
 namespace EmulatorProject.DesignPatterns.Decorator
 {
