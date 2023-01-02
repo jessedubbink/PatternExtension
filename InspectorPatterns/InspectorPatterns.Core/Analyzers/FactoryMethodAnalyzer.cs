@@ -180,51 +180,26 @@ namespace InspectorPatterns.Core.Analyzers
             // Returns true if object creation is achieved by using a Factory Method, otherwise false.
             public bool Analyze()
             {
-                //var localDeclaration = (LocalDeclarationStatementSyntax)_context.Node;
-                //TypeSyntax variableTypeName = localDeclaration.Declaration.Type;
-                //ITypeSymbol variableType = _context.SemanticModel.GetTypeInfo(variableTypeName, _context.CancellationToken).ConvertedType;
-                //TypeSyntax typeName = SyntaxFactory.ParseTypeName(variableType.Name);
-                ////var symbolInfo = _context.SemanticModel.GetSymbolInfo(variableTypeName, _context.CancellationToken);
-                ////var typeSymbol = symbolInfo.Symbol;
-
-                ////var localSementicModel = _context.Compilation.GetSemanticModel(_context.Node.SyntaxTree);
-                ////var localDeclaredSymbol = (ILocalSymbol)localSementicModel.GetDeclaredSymbol(localDeclaration.Declaration.Variables.First());
-
-                //// Return false if the Type of local variable is a predefined object, like: string, int, bool, void etc.
-                //if (typeName.GetType() == typeof(PredefinedTypeSyntax))
-                //{
-                //    return false;
-                //}
-
                 // The method that is used for declaring the variable.
                 var invocationExpressions = _context.Node.DescendantNodes().OfType<InvocationExpressionSyntax>();
                 if (!invocationExpressions.Any())
                 {
                     return false;
                 }
+
                 // Name of the method.
                 var identifierName = invocationExpressions.First().DescendantNodes().OfType<IdentifierNameSyntax>().First();
+
                 // Filter the Syntax Tree where the abstract method originally is declared. 
                 var syntaxTree = _context.Compilation.SyntaxTrees.FirstOrDefault(s => s
                     .GetRoot()
                     .DescendantNodes()
                     .OfType<MethodDeclarationSyntax>()
                     .Any(m => m.Identifier.Value == identifierName.Identifier.Value && m.Modifiers.Any(SyntaxKind.AbstractKeyword)));
-                //.Where(s => s.GetRoot()
-                //    .DescendantNodes()
-                //    .OfType<MethodDeclarationSyntax>()
-                //    .Any(m => m.Identifier.Value == identifierName.Identifier.Value && m.Modifiers.Any(SyntaxKind.AbstractKeyword)));
 
-                //if (!syntaxTrees.Any()) return false;
                 if (syntaxTree == null) return false;
 
-                //foreach (var syntaxTree in syntaxTrees)
-                //{
                 var methodDeclaration = syntaxTree.GetRoot().DescendantNodes().OfType<MethodDeclarationSyntax>().FirstOrDefault(m => m.Identifier.Value == identifierName.Identifier.Value);
-
-                //if (!methodDeclarations.Any()) return false;
-
-                //var methodDeclaration = methodDeclarations.Where(m => m.Identifier.Value == identifierName.Identifier.Value).First();
 
                 if (methodDeclaration == null) return false;
 
@@ -235,7 +210,6 @@ namespace InspectorPatterns.Core.Analyzers
                 {
                     return false;
                 }
-                //}
 
                 // Object creation is achieved by using a Factory Method.
                 return true;
