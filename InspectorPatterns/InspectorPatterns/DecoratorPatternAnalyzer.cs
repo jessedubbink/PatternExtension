@@ -4,6 +4,7 @@ using InspectorPatterns.Helpers;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System;
 using System.Collections.Immutable;
 
 namespace InspectorPatterns
@@ -39,19 +40,44 @@ namespace InspectorPatterns
             // TODO: Consider registering other actions that act on syntax instead of or in addition to symbols
             // See https://github.com/dotnet/roslyn/blob/main/docs/analyzers/Analyzer%20Actions%20Semantics.md for more information
             context.RegisterSyntaxNodeAction(AnalyzeMethodNode, SyntaxKind.ClassDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeFieldNode, SyntaxKind.FieldDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeConstructorNode, SyntaxKind.ConstructorDeclaration);
         }
 
         private void AnalyzeMethodNode(SyntaxNodeAnalysisContext context)
         {
-            analyzer.SetAnalyzerStrategy(new DecoratorAnalyzer.HasSomeInterface(context));
+            analyzer.SetAnalyzerStrategy(new DecoratorAnalyzer.HasAbstractClass(context));
 
             if (!analyzer.Analyze())
             {
                 return;
             }
 
-           context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+           // context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
         }
 
+        private void AnalyzeFieldNode(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetAnalyzerStrategy(new DecoratorAnalyzer.HasPrivateStaticField(ContextConverter.Convert(context)));
+
+            if (!analyzer.Analyze())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+        }
+
+        private void AnalyzeConstructorNode(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetAnalyzerStrategy(new DecoratorAnalyzer.HasConstructor(ContextConverter.Convert(context)));
+
+            if (!analyzer.Analyze())
+            {
+                return;
+            }
+
+            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+        }
     }
 }

@@ -1,34 +1,37 @@
 ﻿using InspectorPatterns.Core.Interfaces;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System.Linq;
 
+
 namespace InspectorPatterns.Core.Analyzers
 {
+    /**
+     * Heeft de class een abstract class.
+     * Is de constructor public en komt die overeen met de abstract class.
+     * Is er een public propperty met de zelfde abstract class
+     * heeft een constructor de zelfde abstract class als argument 
+     */
+
     public class DecoratorAnalyzer
     {
+        private static string _identifierValue;
 
-        public class HasSomeInterface : IAnalyzer
+        public class HasAbstractClass : IAnalyzer
         {
-            private readonly SyntaxNode _classTree;
             private readonly SyntaxNodeAnalysisContext _context;
-            private string _identifierValue;
 
 
-            public HasSomeInterface(SyntaxNodeAnalysisContext context)
+            public HasAbstractClass(SyntaxNodeAnalysisContext context)
             {
                 _context = context;
             }
 
             public bool Analyze()
             {
-                /**
-                 * Heeft de class een interface.
-                 * Is de constructor public en komt die overeen met de interface.
-                 * Is er een public propperty met de zelfde interface
-                 * heeft een constructor de zelfde interface als argument 
-                 */
+
                 ClassDeclarationSyntax classSyntax = (ClassDeclarationSyntax)_context.Node;
                 if (null == classSyntax.BaseList)
                 {
@@ -54,14 +57,14 @@ namespace InspectorPatterns.Core.Analyzers
                                 foreach (var classDeclarationType in classListDeclarationTypes)
                                 {
                                     var type = (IdentifierNameSyntax)classDeclarationType.Type;
-                                    // checks if current interface is same as implemented interface of declared class in project
                                     if ((IdentifierNameSyntax)implementedInterface.Type != type)
                                     {
                                         continue;
                                     }
                                     else
                                     {
-                                        _identifierValue = type.ToString();
+                                        DecoratorAnalyzer._identifierValue = type.ToString();
+                                        return true;
                                     }
 
 
@@ -71,12 +74,91 @@ namespace InspectorPatterns.Core.Analyzers
                     }
                 }
 
-                return true;
+                return false;
             }
 
             public string GetInterfaceName()
             {
-                return _identifierValue;
+                return DecoratorAnalyzer._identifierValue;
+            }
+        }
+
+        public class HasPrivateStaticField : IAnalyzer
+        {
+            private readonly SyntaxNode _classTree;
+
+            public HasPrivateStaticField(SyntaxNode context)
+            {
+                _classTree = context;
+            }
+
+            public bool Analyze()
+            {
+                var fieldDeclarations = _classTree.DescendantNodes().OfType<FieldDeclarationSyntax>();
+
+                if (!fieldDeclarations.Any())
+                {
+                    return false;
+                }
+
+                var classDeclaration = _classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
+
+                for (int i = 0; i < fieldDeclarations.Count(); i++)
+                {
+                    var field = fieldDeclarations.ElementAt(i);
+
+                    if (!(field.Declaration.Type is IdentifierNameSyntax type))
+                    {
+                        continue;
+                    }
+
+                    if (field.Modifiers.Any(SyntaxKind.PrivateKeyword) && type.Identifier.Value.Equals(DecoratorAnalyzer._identifierValue))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        public class HasConstructor : IAnalyzer
+        {
+            private readonly SyntaxNode _classTree;
+
+            public HasConstructor(SyntaxNode context)
+            {
+                _classTree = context;
+            }
+
+            public bool Analyze()
+            {
+                var constructorDeclarations = _classTree.DescendantNodes().OfType<ConstructorDeclarationSyntax>();
+
+                if (!constructorDeclarations.Any())
+                {
+                    return false;
+                }
+
+                for (int i = 0; i < constructorDeclarations.Count(); i++)
+                {
+                    var constructor = constructorDeclarations.ElementAt(i);
+                    var value = constructor.ParameterList.Parameters.First();
+
+                    if (value == null)
+                    {
+                        continue;
+                    }
+
+
+                    // value.Type.ToString().Equals(DecoratorAnalyzer._identifierValue)
+                    if (constructor.Modifiers.Any(SyntaxKind.PublicKeyword))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
             }
         }
     }
