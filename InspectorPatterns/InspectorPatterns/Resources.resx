@@ -121,7 +121,7 @@
     <value>Is a Factory Method Pattern</value>
   </data>
   <data name="FactoryMethodMessage" xml:space="preserve">
-    <value>It seems you have implemented the Factory Method pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/factory-method</value>
+    <value>It looks like you have implemented the Factory Method pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/factory-method</value>
   </data>
   <data name="FactoryMethodTitle" xml:space="preserve">
     <value>Factory Method</value>
