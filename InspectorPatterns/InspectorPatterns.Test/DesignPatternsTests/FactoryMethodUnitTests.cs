@@ -1,19 +1,18 @@
-﻿using Microsoft.CodeAnalysis.CSharp;
-using Xunit;
-using InspectorPatterns.Core.Analyzers;
-using System.Linq;
+﻿using InspectorPatterns.Core.Analyzers;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using System.Linq;
 using System.Threading;
-using Microsoft.CodeAnalysis.MSBuild;
-using Microsoft.CodeAnalysis;
+using Xunit;
 
 namespace InspectorPatterns.Test.DesignPatternsTests
 {
     public class FactoryMethodUnitTests
     {
         [Fact]
-        public void Test_IsAbstractFactoryMethod_NoAbstractMethods()
+        public void Test_IsAbstractFactoryMethod_NoAbstractMethods_ShouldReturnFalse()
         {
             //Arrange
             var wrongCode = @"
@@ -36,7 +35,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         }
 
         [Fact]
-        public void Test_IsAbstractFactoryMethod_NoMethodsWithNonePredefinedReturnType()
+        public void Test_IsAbstractFactoryMethod_NoMethodsWithNonePredefinedReturnType_ShouldReturnFalse()
         {
             //Arrange
             var wrongCode = @"
@@ -76,7 +75,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         }
 
         [Fact]
-        public void Test_OverridesAbstractFactoryMethod_NoMethodsWithNonePredefinedReturnType()
+        public void Test_OverridesAbstractFactoryMethod_NoMethodsWithNonePredefinedReturnType_ShouldReturnFalse()
         {
             //Arrange
             var wrongCode = @"
@@ -101,7 +100,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         }
 
         [Fact]
-        public void Test_OverridesAbstractFactoryMethod_NoMethodsWithOverrideModifier()
+        public void Test_OverridesAbstractFactoryMethod_NoMethodsWithOverrideModifier_ShouldReturnFalse()
         {
             //Arrange
             var wrongCode = @"
@@ -126,7 +125,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         }
 
         [Fact]
-        public void Test_OverridesAbstractFactoryMethod_MethodBodyDoesNotContainNewExpression()
+        public void Test_OverridesAbstractFactoryMethod_MethodBodyDoesNotContainNewExpression_ShouldReturnFalse()
         {
             //Arrange
             var wrongCode = @"
@@ -176,7 +175,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
         }
 
         [Fact]
-        public void Test_IsProductInterface_ShouldSucceed()
+        public void Test_IsProductInterface_NotUsedAsFactoryMethodReturnType_ShouldReturnFalse()
         {
             //Arrange
             var iProduct = @"
@@ -184,24 +183,61 @@ namespace InspectorPatterns.Test.DesignPatternsTests
                 {
                     string Operation();
                 }";
-            var concreteProduct = @"
+            var creatorClass = @"
                 public abstract class Creator
                 {
-                    private abstract IProduct FactoryMethod();
+                    private abstract string FactoryMethod();
                 }";
-            var syntaxTree = SyntaxFactory.ParseSyntaxTree(iProduct).GetRoot();
-            var interfaceDeclaration = syntaxTree.DescendantNodes().OfType<InterfaceDeclarationSyntax>().FirstOrDefault();
-            //var compilation = SyntaxFactory.ParseCompilationUnit(concreteProduct);
-            
-            var workspace = MSBuildWorkspace.Create();
-            var sln = workspace.CurrentSolution;
-            var dummyProject = sln.AddProject("DummyProject", "DummyProject", "C#");
-            var doc = dummyProject.AddDocument("ConcreteProduct.cs", concreteProduct);
+            var interfaceDeclaration = SyntaxFactory.ParseSyntaxTree(iProduct).GetRoot().DescendantNodes().OfType<InterfaceDeclarationSyntax>().FirstOrDefault();
+
+            var workspace = new AdhocWorkspace()
+                .AddSolution(SolutionInfo.Create(SolutionId.CreateNewId(), VersionStamp.Create(), null, null))
+                .AddProject("DummyProject", "DummyProject", LanguageNames.CSharp)
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .AddDocument("Creator.cs", creatorClass).Project.Solution;
+
+            var dummyProject = workspace.Projects.FirstOrDefault();
             var cToken = new CancellationToken();
             var comp = dummyProject.GetCompilationAsync().Result;
             var sModel = comp.GetSemanticModel(comp.SyntaxTrees.First());
             var context = new SyntaxNodeAnalysisContext(interfaceDeclaration, sModel, null, null, null, cToken);
-            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.OverridesAbstractFactoryMethod(context);
+            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.IsProductInterface(context);
+
+            //Act
+            var result = factoryMethodAnalyzer.Analyze();
+
+            //Assert
+            Assert.False(result);
+        }
+
+        [Fact]
+        public void Test_IsProductInterface_ShouldSucceed()
+        {        
+            //Arrange
+            var iProduct = @"
+                public interface IProduct
+                {
+                    string Operation();
+                }";
+            var creatorClass = @"
+                public abstract class Creator
+                {
+                    private abstract IProduct FactoryMethod();
+                }";
+            var interfaceDeclaration = SyntaxFactory.ParseSyntaxTree(iProduct).GetRoot().DescendantNodes().OfType<InterfaceDeclarationSyntax>().FirstOrDefault();
+
+            var workspace = new AdhocWorkspace()
+                .AddSolution(SolutionInfo.Create(SolutionId.CreateNewId(), VersionStamp.Create(), null, null))
+                .AddProject("DummyProject", "DummyProject", LanguageNames.CSharp)
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .AddDocument("Creator.cs", creatorClass).Project.Solution;
+
+            var dummyProject = workspace.Projects.FirstOrDefault();
+            var cToken = new CancellationToken();
+            var comp = dummyProject.GetCompilationAsync().Result;
+            var sModel = comp.GetSemanticModel(comp.SyntaxTrees.First());
+            var context = new SyntaxNodeAnalysisContext(interfaceDeclaration, sModel, null, null, null, cToken);
+            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.IsProductInterface(context);
 
             //Act
             var result = factoryMethodAnalyzer.Analyze();
@@ -210,236 +246,213 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             Assert.True(result);
         }
 
-        //[Fact]
-        //public void Test_HasPrivateConstructor_ShouldSucceed()
-        //{
-        //    //Arrange
-        //    var correctCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            private static Singleton _instance;
+        [Fact]
+        public void Test_IsConcreteProduct_DoesNotImplementProductInterface_ShouldReturnFalse()
+        {
+            //Arrange
+            var iProduct = @"
+                public interface IProduct
+                {
+                    string Operation();
+                }";
+            var creatorClass = @"
+                public abstract class Creator
+                {
+                    private abstract IProduct FactoryMethod();
+                }";
+            var concreteProduct = @"
+                public class ConcreteProduct1
+                {
+                    public string Operation()
+                    {
+                        return ""{Result of ConcreteProduct1}"";
+                    }
+                }";
+            var classDeclaration = SyntaxFactory.ParseSyntaxTree(concreteProduct).GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-        //            private Singleton() { }
+            var workspace = new AdhocWorkspace()
+                .AddSolution(SolutionInfo.Create(SolutionId.CreateNewId(), VersionStamp.Create(), null, null))
+                .AddProject("DummyProject", "DummyProject", LanguageNames.CSharp)
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .AddDocument("IProduct.cs", iProduct).Project.Solution;
+            workspace = workspace.Projects.FirstOrDefault().AddDocument("Creator", creatorClass).Project.Solution;
 
-        //            public static Singleton GetInstance()
-        //            {
-        //                return _instance;
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-        //    var factoryMethodAnalyzer = new SingletonAnalyzer.HasPrivateConstructor(contextNode);
+            var dummyProject = workspace.Projects.FirstOrDefault();
+            var cToken = new CancellationToken();
+            var comp = dummyProject.GetCompilationAsync().Result;
+            var sModel = comp.GetSemanticModel(comp.SyntaxTrees.First());
+            var context = new SyntaxNodeAnalysisContext(classDeclaration, sModel, null, null, null, cToken);
+            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.IsConcreteProduct(context);
 
-        //    //Act
-        //    var result = factoryMethodAnalyzer.Analyze();
+            //Act
+            var result = factoryMethodAnalyzer.Analyze();
 
-        //    //Assert
-        //    Assert.True(result);
-        //}
+            //Assert
+            Assert.False(result);
+        }
 
-        //[Fact]
-        //public void Test_HasPrivateStaticSelfField_NoFields()
-        //{
-        //    //Arrange
-        //    var wrongCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            private Singleton() { }
+        [Fact]
+        public void Test_IsConcreteProduct_ProductInterfaceNotUsedAsReturnType_ShouldReturnFalse()
+        {
+            //Arrange
+            var iProduct = @"
+                public interface IProduct
+                {
+                    string Operation();
+                }";
+            var creatorClass = @"
+                public abstract class Creator
+                {
+                    private abstract string FactoryMethod();
+                }";
+            var concreteProduct = @"
+                public class ConcreteProduct1
+                {
+                    public string Operation()
+                    {
+                        return ""{Result of ConcreteProduct1}"";
+                    }
+                }";
+            var classDeclaration = SyntaxFactory.ParseSyntaxTree(concreteProduct).GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-        //            private void Check()
-        //            {
-        //                Console.WriteLine();
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-        //    var factoryMethodAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
+            var workspace = new AdhocWorkspace()
+                .AddSolution(SolutionInfo.Create(SolutionId.CreateNewId(), VersionStamp.Create(), null, null))
+                .AddProject("DummyProject", "DummyProject", LanguageNames.CSharp)
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .AddDocument("IProduct.cs", iProduct).Project.Solution;
+            workspace = workspace.Projects.FirstOrDefault().AddDocument("Creator", creatorClass).Project.Solution;
 
-        //    //Act
-        //    var result = factoryMethodAnalyzer.Analyze();
+            var dummyProject = workspace.Projects.FirstOrDefault();
+            var cToken = new CancellationToken();
+            var comp = dummyProject.GetCompilationAsync().Result;
+            var sModel = comp.GetSemanticModel(comp.SyntaxTrees.First());
+            var context = new SyntaxNodeAnalysisContext(classDeclaration, sModel, null, null, null, cToken);
+            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.IsConcreteProduct(context);
 
-        //    //Assert
-        //    Assert.False(result);
-        //}
+            //Act
+            var result = factoryMethodAnalyzer.Analyze();
 
-        //[Fact]
-        //public void Test_HasPrivateStaticSelfField_NoPrivateFields()
-        //{
-        //    //Arrange
-        //    var wrongCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            public static Singleton _instance;
+            //Assert
+            Assert.False(result);
+        }
 
-        //            private Singleton() { }
+        [Fact]
+        public void Test_IsConcreteProduct_ShouldSucceed()
+        {
+            //Arrange
+            var iProduct = @"
+                public interface IProduct
+                {
+                    string Operation();
+                }";
+            var creatorClass = @"
+                public abstract class Creator
+                {
+                    private abstract IProduct FactoryMethod();
+                }";
+            var concreteProduct = @"
+                public class ConcreteProduct1 : IProduct
+                {
+                    public string Operation()
+                    {
+                        return ""{Result of ConcreteProduct1}"";
+                    }
+                }";
+            var classDeclaration = SyntaxFactory.ParseSyntaxTree(concreteProduct).GetRoot().DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
-        //            public static Singleton GetInstance()
-        //            {
-        //                return _instance;
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-        //    var factoryMethodAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
+            var workspace = new AdhocWorkspace()
+                .AddSolution(SolutionInfo.Create(SolutionId.CreateNewId(), VersionStamp.Create(), null, null))
+                .AddProject("DummyProject", "DummyProject", LanguageNames.CSharp)
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .AddDocument("IProduct.cs", iProduct).Project.Solution;
+            workspace = workspace.Projects.FirstOrDefault().AddDocument("Creator", creatorClass).Project.Solution;
 
-        //    //Act
-        //    var result = factoryMethodAnalyzer.Analyze();
+            var dummyProject = workspace.Projects.FirstOrDefault();
+            var cToken = new CancellationToken();
+            var comp = dummyProject.GetCompilationAsync().Result;
+            var sModel = comp.GetSemanticModel(comp.SyntaxTrees.First());
+            var context = new SyntaxNodeAnalysisContext(classDeclaration, sModel, null, null, null, cToken);
+            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.IsConcreteProduct(context);
 
-        //    //Assert
-        //    Assert.False(result);
-        //}
+            //Act
+            var result = factoryMethodAnalyzer.Analyze();
 
-        //[Fact]
-        //public void Test_HasPrivateStaticSelfField_NoStaticFields()
-        //{
-        //    //Arrange
-        //    var wrongCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            private Singleton _instance;
+            //Assert
+            Assert.True(result);
+        }
 
-        //            private Singleton() { }
+        [Fact]
+        public void Test_DeclarationWithFactoryMethod_MethodReturnsPredefinedObject_ShouldReturnFalse()
+        {
+            //Arrange
+            var creatorClass = @"
+                public abstract class Creator
+                {
+                    private abstract string FactoryMethod();
 
-        //            public static Singleton GetInstance()
-        //            {
-        //                return _instance;
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-        //    var factoryMethodAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
+                    public string SomeOperation()
+                    {
+                        // Call the factory method to create a Product object.
+                        var product = FactoryMethod();
+                    }
+                }";
+            var localDeclaration = SyntaxFactory.ParseSyntaxTree(creatorClass).GetRoot().DescendantNodes().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
 
-        //    //Act
-        //    var result = factoryMethodAnalyzer.Analyze();
+            var workspace = new AdhocWorkspace()
+                .AddSolution(SolutionInfo.Create(SolutionId.CreateNewId(), VersionStamp.Create(), null, null))
+                .AddProject("DummyProject", "DummyProject", LanguageNames.CSharp)
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .AddDocument("Creator.cs", creatorClass).Project.Solution;
 
-        //    //Assert
-        //    Assert.False(result);
-        //}
+            var dummyProject = workspace.Projects.FirstOrDefault();
+            var cToken = new CancellationToken();
+            var comp = dummyProject.GetCompilationAsync().Result;
+            var sModel = comp.GetSemanticModel(comp.SyntaxTrees.First());
+            var context = new SyntaxNodeAnalysisContext(localDeclaration, sModel, null, null, null, cToken);
+            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.DeclarationWithFactoryMethod(context);
 
-        //[Fact]
-        //public void Test_HasPrivateStaticSelfField_NoReturnTypeClassFields()
-        //{
-        //    //Arrange
-        //    var wrongCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            private static string _teststring;
+            //Act
+            var result = factoryMethodAnalyzer.Analyze();
 
-        //            private Singleton() { }
+            //Assert
+            Assert.False(result);
+        }
 
-        //            private void Check()
-        //            {
-        //                Console.WriteLine(_teststring);
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(wrongCode).GetRoot();
-        //    var factoryMethodAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
+        [Fact]
+        public void Test_DeclarationWithFactoryMethod_ShouldSucceed()
+        {
+            //Arrange
+            var creatorClass = @"
+                public abstract class Creator
+                {
+                    private abstract IProduct FactoryMethod();
 
-        //    //Act
-        //    var result = factoryMethodAnalyzer.Analyze();
+                    public string SomeOperation()
+                    {
+                        // Call the factory method to create a Product object.
+                        var product = FactoryMethod();
+                    }
+                }";
+            var localDeclaration = SyntaxFactory.ParseSyntaxTree(creatorClass).GetRoot().DescendantNodes().OfType<LocalDeclarationStatementSyntax>().FirstOrDefault();
 
-        //    //Assert
-        //    Assert.False(result);
-        //}
+            var workspace = new AdhocWorkspace()
+                .AddSolution(SolutionInfo.Create(SolutionId.CreateNewId(), VersionStamp.Create(), null, null))
+                .AddProject("DummyProject", "DummyProject", LanguageNames.CSharp)
+                .AddMetadataReference(MetadataReference.CreateFromFile(typeof(object).Assembly.Location))
+                .AddDocument("Creator.cs", creatorClass).Project.Solution;
 
-        //[Fact]
-        //public void Test_HasPrivateStaticSelfField_ShouldSucceed()
-        //{
-        //    //Arrange
-        //    var correctCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            private string _testIncorrectType;
-        //            private static Singleton _instance;
+            var dummyProject = workspace.Projects.FirstOrDefault();
+            var cToken = new CancellationToken();
+            var comp = dummyProject.GetCompilationAsync().Result;
+            var sModel = comp.GetSemanticModel(comp.SyntaxTrees.First());
+            var context = new SyntaxNodeAnalysisContext(localDeclaration, sModel, null, null, null, cToken);
+            var factoryMethodAnalyzer = new FactoryMethodAnalyzer.DeclarationWithFactoryMethod(context);
 
-        //            private Singleton() { }
-        //            private Singleton(string) { }
+            //Act
+            var result = factoryMethodAnalyzer.Analyze();
 
-        //            public static Singleton GetInstance()
-        //            {
-        //                return _instance;
-        //            }
-
-        //            private void check()
-        //            {
-        //                Console.WriteLine(_testIncorrectType);
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-        //    var factoryMethodAnalyzer = new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode);
-
-        //    //Act
-        //    var result = factoryMethodAnalyzer.Analyze();
-
-        //    //Assert
-        //    Assert.True(result);
-        //}
-
-        //[Fact]
-        //public void Test_Analyze_ShouldFail()
-        //{
-        //    //Arrange
-        //    var correctCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            private static Singleton _instance;
-
-        //            public static Singleton GetInstance()
-        //            {
-        //                return _instance;
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-        //    var designPatternAnalyzer = new DesignPatternAnalyzer();
-
-        //    //Act
-        //    designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasGetInstanceSelfMethod(contextNode));
-        //    var hasGetInstanceSelf = designPatternAnalyzer.Analyze();
-
-        //    designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateConstructor(contextNode));
-        //    var hasPrivateConstructor = designPatternAnalyzer.Analyze();
-
-        //    designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode));
-        //    var hasPrivateStaticSelfField = designPatternAnalyzer.Analyze();
-
-        //    //Assert
-        //    Assert.False(hasGetInstanceSelf && hasPrivateConstructor && hasPrivateStaticSelfField);
-        //}
-
-        //[Fact]
-        //public void Test_Analyze_ShouldSucceed()
-        //{
-        //    //Arrange
-        //    var correctCode = @"
-        //        public sealed class Singleton
-        //        {
-        //            private static Singleton _instance;
-        //            private string _teststring;
-
-        //            private Singleton() { }
-        //            private Singleton(string) { }
-
-        //            public static Singleton GetInstance()
-        //            {
-        //                return _instance;
-        //            }
-
-        //            private void check()
-        //            {
-        //                Console.WriteLine(_teststring);
-        //            }
-        //        }";
-        //    var contextNode = SyntaxFactory.ParseSyntaxTree(correctCode).GetRoot();
-        //    var designPatternAnalyzer = new DesignPatternAnalyzer();
-
-        //    //Act
-        //    designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasGetInstanceSelfMethod(contextNode));
-        //    var hasGetInstanceSelf = designPatternAnalyzer.Analyze();
-
-        //    designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateConstructor(contextNode));
-        //    var hasPrivateConstructor = designPatternAnalyzer.Analyze();
-
-        //    designPatternAnalyzer.SetAnalyzerStrategy(new SingletonAnalyzer.HasPrivateStaticSelfField(contextNode));
-        //    var hasPrivateStaticSelfField = designPatternAnalyzer.Analyze();
-
-        //    //Assert
-        //    Assert.True(hasGetInstanceSelf && hasPrivateConstructor && hasPrivateStaticSelfField);
-        //}
+            //Assert
+            Assert.True(result);
+        }
     }
 }
