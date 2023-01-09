@@ -56,15 +56,21 @@ namespace InspectorPatterns.Core.Analyzers
                                 var classListDeclarationTypes = classDeclarationBaseList.Types;
                                 foreach (var classDeclarationType in classListDeclarationTypes)
                                 {
-                                    var type = (IdentifierNameSyntax)classDeclarationType.Type;
-                                    if ((IdentifierNameSyntax)implementedInterface.Type != type)
+                                    try
                                     {
-                                        continue;
+                                        var type = (IdentifierNameSyntax)classDeclarationType.Type;
+                                        if ((IdentifierNameSyntax)implementedInterface.Type != type)
+                                        {
+                                            continue;
+                                        }
+                                        else
+                                        {
+                                            DecoratorAnalyzer._identifierValue = type.ToString();
+                                            return true;
+                                        }
                                     }
-                                    else
-                                    {
-                                        DecoratorAnalyzer._identifierValue = type.ToString();
-                                        return true;
+                                    catch {
+                                        continue;
                                     }
 
 
@@ -143,6 +149,11 @@ namespace InspectorPatterns.Core.Analyzers
                 for (int i = 0; i < constructorDeclarations.Count(); i++)
                 {
                     var constructor = constructorDeclarations.ElementAt(i);
+                    if (constructor.ParameterList.Parameters.Count == 0)
+                    {
+                        continue;
+                    }
+
                     var value = constructor.ParameterList.Parameters.First();
 
                     if (value == null)
@@ -150,12 +161,43 @@ namespace InspectorPatterns.Core.Analyzers
                         continue;
                     }
 
-
-                    // value.Type.ToString().Equals(DecoratorAnalyzer._identifierValue)
-                    if (constructor.Modifiers.Any(SyntaxKind.PublicKeyword))
+                    if (constructor.Modifiers.Any(SyntaxKind.PublicKeyword) && value.Type.ToString() == DecoratorAnalyzer._identifierValue)
                     {
                         return true;
                     }
+                }
+
+                return false;
+            }
+        }
+
+        public class AnalyzeStatement : IAnalyzer
+        {
+            private readonly SyntaxNodeAnalysisContext _context;
+
+            public AnalyzeStatement(SyntaxNodeAnalysisContext context)
+            {
+                _context = context;
+            }
+
+            public bool Analyze()
+            {
+                var objectCreation = _context.Node.DescendantNodes().OfType<ObjectCreationExpressionSyntax>();
+
+                if (objectCreation.Count() == 0)
+                {
+                    return false;
+                }
+
+                if (objectCreation.First().ArgumentList.Arguments.Count() == 0)
+                {
+                    return false;
+                }
+
+
+                if (objectCreation.First().ArgumentList.Arguments.First().Expression is ObjectCreationExpressionSyntax)
+                {
+                    return true;
                 }
 
                 return false;

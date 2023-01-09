@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Diagnostics;
 using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 
 namespace InspectorPatterns
@@ -27,6 +28,8 @@ namespace InspectorPatterns
 
         private DesignPatternAnalyzer analyzer;
 
+        private List<bool> allChecks = new List<bool>();
+
         public override void Initialize(AnalysisContext context)
         {
             context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
@@ -42,18 +45,20 @@ namespace InspectorPatterns
             context.RegisterSyntaxNodeAction(AnalyzeMethodNode, SyntaxKind.ClassDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeFieldNode, SyntaxKind.FieldDeclaration);
             context.RegisterSyntaxNodeAction(AnalyzeConstructorNode, SyntaxKind.ConstructorDeclaration);
+            context.RegisterSyntaxNodeAction(AnalyzeStatement, SyntaxKind.LocalDeclarationStatement);
         }
 
         private void AnalyzeMethodNode(SyntaxNodeAnalysisContext context)
         {
+            this.allChecks.Clear();
             analyzer.SetAnalyzerStrategy(new DecoratorAnalyzer.HasAbstractClass(context));
 
             if (!analyzer.Analyze())
             {
+                this.allChecks.Add(false);
                 return;
             }
-
-           // context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            this.allChecks.Add(true);
         }
 
         private void AnalyzeFieldNode(SyntaxNodeAnalysisContext context)
@@ -62,15 +67,33 @@ namespace InspectorPatterns
 
             if (!analyzer.Analyze())
             {
+                this.allChecks.Add(false);
                 return;
             }
-
-            context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            this.allChecks.Add(true);
         }
 
         private void AnalyzeConstructorNode(SyntaxNodeAnalysisContext context)
         {
             analyzer.SetAnalyzerStrategy(new DecoratorAnalyzer.HasConstructor(ContextConverter.Convert(context)));
+
+            if (!analyzer.Analyze())
+            {
+                this.allChecks.Add(false);
+                return;
+            }
+            this.allChecks.Add(true);
+
+
+            if (!this.allChecks.Contains(false))
+            {
+                context.ReportDiagnostic(Diagnostic.Create(Rule, context.Node.GetLocation()));
+            }
+        }
+
+        private void AnalyzeStatement(SyntaxNodeAnalysisContext context)
+        {
+            analyzer.SetAnalyzerStrategy(new DecoratorAnalyzer.AnalyzeStatement(context));
 
             if (!analyzer.Analyze())
             {

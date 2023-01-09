@@ -6,7 +6,7 @@ namespace EmulatorProject.DesignPatterns.Decorator
 	{
 		public Test()
 		{
-			Beverage beverage = new Espresso(new Milk());
+			Beverage beverage = new Milk(new Soy(new Espresso()));
 		}
 	}
 }
