@@ -117,6 +117,15 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="FactoryMethodDescription" xml:space="preserve">
+    <value>Is a Factory Method Pattern</value>
+  </data>
+  <data name="FactoryMethodMessage" xml:space="preserve">
+    <value>It looks like you have implemented the Factory Method pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/factory-method</value>
+  </data>
+  <data name="FactoryMethodTitle" xml:space="preserve">
+    <value>Factory Method</value>
+  </data>
   <data name="DecoratorDescription" xml:space="preserve">
     <value>Is a decorator</value>
   </data>
