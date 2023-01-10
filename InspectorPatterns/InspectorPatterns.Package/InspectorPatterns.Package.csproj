@@ -27,7 +27,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\InspectorPatterns.CodeFixes\InspectorPatterns.CodeFixes.csproj" />
     <ProjectReference Include="..\InspectorPatterns\InspectorPatterns.csproj" />
   </ItemGroup>
 
