@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - 'master'
+      - 'pipeline-deploy-to-market-place'
 jobs:
   build:
     runs-on: windows-latest
