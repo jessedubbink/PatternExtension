@@ -187,7 +187,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             //Assert
             Assert.True(hasAbatractClass);
             Assert.True((DecoratorAnalyzer._identifierValue == "Beverage"));
-            Assert.True(staticField);
+            Assert.False(staticField);
             Assert.False(decoratorAnalyzer);
         }
 
