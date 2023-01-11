@@ -17,7 +17,7 @@ namespace InspectorPatterns.Core.Analyzers
 
     public class DecoratorAnalyzer
     {
-        private static string _identifierValue;
+        public static string _identifierValue;
 
         public class HasAbstractClass : IAnalyzer
         {
@@ -59,7 +59,7 @@ namespace InspectorPatterns.Core.Analyzers
                                     try
                                     {
                                         var type = (IdentifierNameSyntax)classDeclarationType.Type;
-                                        if ((IdentifierNameSyntax)implementedInterface.Type != type)
+                                        if (((IdentifierNameSyntax)implementedInterface.Type).ToString() != type.ToString())
                                         {
                                             continue;
                                         }
@@ -106,8 +106,6 @@ namespace InspectorPatterns.Core.Analyzers
                 {
                     return false;
                 }
-
-                var classDeclaration = _classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault();
 
                 for (int i = 0; i < fieldDeclarations.Count(); i++)
                 {
@@ -194,6 +192,13 @@ namespace InspectorPatterns.Core.Analyzers
                     return false;
                 }
 
+                if (objectCreation.Last().ArgumentList.Arguments.Count() != 0)
+                {
+                    if (!(objectCreation.Last().ArgumentList.Arguments.First().Expression is ObjectCreationExpressionSyntax))
+                    {
+                        return false;
+                    }
+                }
 
                 if (objectCreation.First().ArgumentList.Arguments.First().Expression is ObjectCreationExpressionSyntax)
                 {
