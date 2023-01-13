@@ -7,7 +7,7 @@ on:
       - 'master'
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     defaults:
       run:
         working-directory: ./InspectorPatterns
@@ -16,16 +16,18 @@ jobs:
         dotnet-version: ['2.0.0']
     steps:
       - uses: actions/checkout@v3
-      - name: Setup dotnet
+      - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Setup MsBuild
+        uses: microsoft/setup-msbuild@v1.0.2
         # Restore dependencies.
-      - name: Install dependencies
-        run: dotnet restore
+      - name: Restore NuGet Packages
+        run: nuget restore
         # Run build in Release config.
-      - name: Build dotnet application
-        run: dotnet build -c Release --no-restore
+      - name: Build extension
+        run: msbuild /t:Rebuild
         # Run tests.
       - name: Test with dotnet
         run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
@@ -42,4 +44,6 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: InspectorPattern-0.0.0
-          path: ./InspectorPatterns/InspectorPatterns.Vsix/bin/Release/net472/InspectorPatterns.Vsix.vsix
+          path: './'
+        # Use always() to always run this step to publish test results when there are test failures.
+        if: ${{ always() }}
