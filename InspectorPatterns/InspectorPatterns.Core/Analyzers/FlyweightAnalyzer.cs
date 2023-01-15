@@ -7,114 +7,168 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 
 namespace InspectorPatterns.Core.Analyzers
 {
-    public class FlyweightAnalyzer : IAnalyzer
+    public class FlyweightAnalyzer
     {
-        private readonly SyntaxNodeAnalysisContext _context;
-        private readonly SyntaxNode _classTree;
-        private Location location;
+        public static List<ICollection> collections = new List<ICollection>();
 
-        private List<ICollection> collections = new List<ICollection>();
-
-        public FlyweightAnalyzer(SyntaxNodeAnalysisContext context)
+        /// <summary>
+        /// Class used to find collections used for Flyweight
+        /// </summary>
+        public class HasFlyweightCollection : IAnalyzer
         {
-            _context = context;
-            _classTree = context.Node.SyntaxTree.GetRoot();
-        }
+            private readonly SyntaxNodeAnalysisContext _context;
 
-        public bool Analyze()
-        {
-            if (hasCollectionOfObjects() && hasGetFlyweightMethod())
+            public HasFlyweightCollection(SyntaxNodeAnalysisContext context)
             {
-                location = _classTree.DescendantNodes().OfType<ClassDeclarationSyntax>().FirstOrDefault().Identifier.GetLocation();
-                return true;
+                _context = context;
             }
 
-            return false;
-        }
-
-        public Location GetLocation()
-        {
-            return location;
-        }
-
-        public bool hasCollectionOfObjects()
-        {
-            List<object> objectCollection = new List<object>();
-            var variableDeclarations = _classTree.DescendantNodes().OfType<VariableDeclarationSyntax>();
-
-            foreach (var item in variableDeclarations)
+            public bool Analyze()
             {
-                //var test = _context.SemanticModel.GetSymbolInfo(item.Declaration.Type);
+                // Checks if there are any field declerations which use interface ICollection (List, Dictionary, Enumerable, Array etc..).
+                if (CheckFlyweightCollections() && collections.Count > 0)
+                {
+                    return true;
+                }
 
-                string typeName = _context.SemanticModel.GetTypeInfo(item).Type.Name;
-
-
-                //if (variable.Type.GetType().GetInterface(nameof(ICollection)) == null)
-                //{
-                //    continue;
-                //}
-
-                //collections.Add(objectCollection);
-            }
-
-            if (collections.Count > 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
-        public bool hasGetFlyweightMethod()
-        {
-            if (collections == null)
-            {
-
-            }
-
-            if (collections.Count == 0)
-            {
+                // If no Flyweight collections have been found, return false.
                 return false;
             }
 
-            var methodDeclarations = _classTree.DescendantNodes().OfType<MethodDeclarationSyntax>();
-
-            if (!methodDeclarations.Any())
+            /// <summary>
+            /// Store all collections with containing type Flyweight class and return true if any have been found.
+            /// </summary>
+            /// <returns><see langword="true" /> if any collections with containing type Flyweight class have been found.<br/>
+            /// <see langword="false" /> if none are found.</returns>
+            public bool CheckFlyweightCollections()
             {
-                return false;
-            }
+                List<object> collectionList = new List<object>();
+                var fieldDeclerations = _context.Node.SyntaxTree.GetRoot().DescendantNodes().OfType<FieldDeclarationSyntax>();
 
-            foreach (MethodDeclarationSyntax method in methodDeclarations) // N
-            {
-                if (!method.Modifiers.Any(SyntaxKind.PublicKeyword))
+                // Iterate through all field declerations.
+                foreach (var item in fieldDeclerations)
                 {
-                    continue;
+                    // Find all declerations of types that interface ICollection (List, Dictionary, Enumerable, Array etc..).
+                    List<ICollection> collectionInterfaces = new List<ICollection>();
+
+                    try
+                    {
+                         collectionInterfaces = _context.SemanticModel.GetTypeInfo(item.Declaration.Type).ConvertedType.Interfaces.OfType<ICollection>().ToList();
+                    } catch (Exception ex)
+                    {
+                        return false;
+                    }
+
+                    // Check if any have been found.
+                    if (collectionInterfaces.Count == 0)
+                    {
+                        return false;
+                    }
+
+                    // Add found collections to a temporary list (This prevents O(N^2)).
+                    collectionList.AddRange(collectionInterfaces);
                 }
 
-                if (method.ReturnType == null)
+                // Iterate through all found collections in temporary list.
+                foreach (ICollection collection in collectionList)
                 {
-                    continue;
-                }
-
-                foreach (ICollection collection in collections) // N^2, we should seperate this from the parent loop
-                {
-                    if (collection.GetType() != method.ReturnType.GetType())
+                    // Check if collection has storable type of Flyweight class
+                    if (!IsCollectionFlyweight(collection))
                     {
                         continue;
                     }
 
-                    var ifStatements = method.DescendantNodes().OfType<IfStatementSyntax>().FirstOrDefault();
+                    // Finally add found collection of which we know is used for Flyweight pattern to a global List.
+                    collections.Add(collection);
+                }
 
-
+                // If any collection has been found that is used for Flyweight return true.
+                if (collections.Count > 0)
+                {
                     return true;
                 }
+
+                // If no collections have been found, return false.
+                return false;
             }
 
-            return false;
+            /// <summary>
+            /// Check if collection contains objects of type Flyweight class. <br />
+            /// TODO: This method has not been finished due to limitations in our knowledge of the Roslyn API. <br/>
+            /// We have not been able to find a workaround and in agreement with the Stakeholders of InspectorPatterns we have decided to research this further in future.
+            /// </summary>
+            /// <param name="collection"></param>
+            /// <returns><see langword="true" /> if collection if of type Flyweight class.<br/>
+            /// <see langword="false" /> if collection is not of type Flyweight class.</returns>
+            public bool IsCollectionFlyweight(ICollection collection)
+            {
+                // TODO: Check if collection can store type of Flyweight class.
+                // TODO: Check if collection is distinct.
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Class used to find methods used for Flyweight
+        /// </summary>
+        public class HasGetFlyweightMethod : IAnalyzer
+        {
+            private readonly MethodDeclarationSyntax _methodDeclaration;
+
+            public HasGetFlyweightMethod(SyntaxNodeAnalysisContext context)
+            {
+                _methodDeclaration = (MethodDeclarationSyntax)context.Node;
+            }
+
+            public HasGetFlyweightMethod(MethodDeclarationSyntax methodDeclaration)
+            {
+                _methodDeclaration = methodDeclaration;
+            }
+
+            public bool Analyze()
+            {
+                bool isObjectCreated = false;
+
+                // Check if method is public, not empty and return type is not null.
+                if (!_methodDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword) || _methodDeclaration.ReturnType == null || _methodDeclaration.Body == null)
+                {
+                    return false;
+                }
+
+                // Als wij een if statement hebben waarin een object wordt gemaakt van de class welke return type is van de method
+                // Flyweight
+
+                List<IfStatementSyntax> expressions = _methodDeclaration.Body.DescendantNodes().OfType<IfStatementSyntax>().ToList();
+                List<ObjectCreationExpressionSyntax> objectCreations = new List<ObjectCreationExpressionSyntax>();
+                
+                foreach (IfStatementSyntax expression in expressions)
+                {
+                    objectCreations = expression.DescendantNodes().OfType<ObjectCreationExpressionSyntax>().ToList();
+                }
+
+                if (objectCreations.Count == 0)
+                {
+                    return false;
+                }
+
+                foreach (ObjectCreationExpressionSyntax objectCreation in objectCreations)
+                {
+                    // If method return type is equal to object creation type
+                    var returnType = (IdentifierNameSyntax) _methodDeclaration.ReturnType;
+                    var creationType = (IdentifierNameSyntax) objectCreation.Type;
+                    if (returnType.Identifier.ValueText != creationType.Identifier.ValueText)
+                    {
+                        continue;
+                    }
+
+                    isObjectCreated = true;
+                }
+
+                return isObjectCreated;
+            }
         }
     }
 }

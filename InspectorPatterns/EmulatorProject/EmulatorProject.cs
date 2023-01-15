@@ -67,9 +67,8 @@ namespace EmulatorProject
                 new Car { Company = "BMW", Model = "M5", Color = "red" },
                 new Car { Company = "BMW", Model = "X6", Color = "white" }
             );
-            factory.ListFlyweights();
 
-            AddCarToPoliceDatabase(factory, new Car
+            addCarToPoliceDatabase(factory, new Car
             {
                 Number = "CL234IR",
                 Owner = "James Doe",
@@ -78,7 +77,7 @@ namespace EmulatorProject
                 Color = "red"
             });
 
-            AddCarToPoliceDatabase(factory, new Car
+            addCarToPoliceDatabase(factory, new Car
             {
                 Number = "CL234IR",
                 Owner = "James Doe",
@@ -86,11 +85,9 @@ namespace EmulatorProject
                 Model = "X1",
                 Color = "red"
             });
-
-            factory.ListFlyweights();
         }
 
-        private static void AddCarToPoliceDatabase(FlyweightFactory factory, Car car)
+        public static void addCarToPoliceDatabase(FlyweightFactory factory, Car car)
         {
             Console.WriteLine("\nClient: Adding a car to database.");
 
