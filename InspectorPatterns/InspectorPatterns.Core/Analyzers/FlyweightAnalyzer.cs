@@ -1,5 +1,4 @@
-﻿using InspectorPatterns.Core.DesignPatterns.Interfaces;
-using InspectorPatterns.Core.Interfaces;
+﻿using InspectorPatterns.Core.Interfaces;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -10,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 
-namespace InspectorPatterns.Core.DesignPatterns.Analyzers
+namespace InspectorPatterns.Core.Analyzers
 {
-    public class FlyweightAnalyzer : IAnalyzer, IFlyweightPattern
+    public class FlyweightAnalyzer : IAnalyzer
     {
         private readonly SyntaxNodeAnalysisContext _context;
         private readonly SyntaxNode _classTree;

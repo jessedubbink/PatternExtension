@@ -61,29 +61,29 @@ namespace InspectorPatterns {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type names should be all uppercase..
+        ///   Looks up a localized string similar to Is a Factory Method Pattern.
         /// </summary>
-        internal static string AnalyzerDescription {
+        internal static string FactoryMethodDescription {
             get {
-                return ResourceManager.GetString("AnalyzerDescription", resourceCulture);
+                return ResourceManager.GetString("FactoryMethodDescription", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type name &apos;{0}&apos; contains lowercase letters.
+        ///   Looks up a localized string similar to It looks like you have implemented the Factory Method pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/factory-method.
         /// </summary>
-        internal static string AnalyzerMessageFormat {
+        internal static string FactoryMethodMessage {
             get {
-                return ResourceManager.GetString("AnalyzerMessageFormat", resourceCulture);
+                return ResourceManager.GetString("FactoryMethodMessage", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Type name contains lowercase letters.
+        ///   Looks up a localized string similar to Factory Method.
         /// </summary>
-        internal static string AnalyzerTitle {
+        internal static string FactoryMethodTitle {
             get {
-                return ResourceManager.GetString("AnalyzerTitle", resourceCulture);
+                return ResourceManager.GetString("FactoryMethodTitle", resourceCulture);
             }
         }
         

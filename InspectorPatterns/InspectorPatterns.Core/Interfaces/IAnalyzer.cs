@@ -8,6 +8,5 @@ namespace InspectorPatterns.Core.Interfaces
     public interface IAnalyzer
     {
         bool Analyze();
-        Location GetLocation();
     }
 }

@@ -1,0 +1,45 @@
+name: Release PatternInspector
+run-name: ${{ github.actor }} is running Unit-tests
+on:
+  # Run when pull-request is merged to master.
+  push:
+    branches:
+      - 'master'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./InspectorPatterns
+    strategy:
+      matrix:
+        dotnet-version: ['2.0.0']
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+        # Restore dependencies.
+      - name: Install dependencies
+        run: dotnet restore
+        # Run build in Release config.
+      - name: Build dotnet application
+        run: dotnet build -c Release --no-restore
+        # Run tests.
+      - name: Test with dotnet
+        run: dotnet test --logger trx --results-directory "TestResults-${{ matrix.dotnet-version }}"
+        # Test result artifact.
+      - name: Upload dotnet test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: dotnet-results-${{ matrix.dotnet-version }}
+          path: ./InspectorPatterns/TestResults-${{ matrix.dotnet-version }}
+        # Use always() to always run this step to publish test results when there are test failures.
+        if: ${{ always() }}
+        # Publish artifact
+      - name: Create artifact from vsix extension installation file
+        uses: actions/upload-artifact@v3
+        with:
+          name: InspectorPattern-0.0.0
+          path: ./InspectorPatterns/InspectorPatterns.Vsix/bin/Release/net472/InspectorPatterns.Vsix.vsix
