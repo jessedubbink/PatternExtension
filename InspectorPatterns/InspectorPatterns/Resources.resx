@@ -126,6 +126,15 @@
   <data name="FactoryMethodTitle" xml:space="preserve">
     <value>Factory Method</value>
   </data>
+  <data name="DecoratorDescription" xml:space="preserve">
+    <value>Is a decorator</value>
+  </data>
+  <data name="DecoratorMessage" xml:space="preserve">
+    <value>It seems you have implemented the Decorator pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/decorator</value>
+  </data>
+  <data name="DecoratorTitle" xml:space="preserve">
+    <value>Decorator</value>
+  </data>
   <data name="SingletonDescription" xml:space="preserve">
     <value>Is a singleton</value>
   </data>

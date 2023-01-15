@@ -88,6 +88,33 @@ namespace InspectorPatterns {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Is a decorator.
+        /// </summary>
+        internal static string DecoratorDescription {
+            get {
+                return ResourceManager.GetString("DecoratorDescription", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to It seems you have implemented the Decorator pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/decorator.
+        /// </summary>
+        internal static string DecoratorMessage {
+            get {
+                return ResourceManager.GetString("DecoratorMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Decorator.
+        /// </summary>
+        internal static string DecoratorTitle {
+            get {
+                return ResourceManager.GetString("DecoratorTitle", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Is a singleton.
         /// </summary>
         internal static string SingletonDescription {
