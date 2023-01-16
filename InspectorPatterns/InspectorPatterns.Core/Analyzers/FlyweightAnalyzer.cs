@@ -12,7 +12,7 @@ namespace InspectorPatterns.Core.Analyzers
 {
     public class FlyweightAnalyzer
     {
-        public static List<ICollection> collections = new List<ICollection>();
+        public static List<INamedTypeSymbol> collections = new List<INamedTypeSymbol>();
 
         /// <summary>
         /// Class used to find collections used for Flyweight
@@ -45,18 +45,18 @@ namespace InspectorPatterns.Core.Analyzers
             /// <see langword="false" /> if none are found.</returns>
             public bool CheckFlyweightCollections()
             {
-                List<object> collectionList = new List<object>();
+                List<INamedTypeSymbol> collectionList = new List<INamedTypeSymbol>();
                 var fieldDeclerations = _context.Node.SyntaxTree.GetRoot().DescendantNodes().OfType<FieldDeclarationSyntax>();
 
                 // Iterate through all field declerations.
                 foreach (var item in fieldDeclerations)
                 {
                     // Find all declerations of types that interface ICollection (List, Dictionary, Enumerable, Array etc..).
-                    List<ICollection> collectionInterfaces = new List<ICollection>();
+                    List<INamedTypeSymbol> collectionInterfaces = new List<INamedTypeSymbol>();
 
                     try
                     {
-                         collectionInterfaces = _context.SemanticModel.GetTypeInfo(item.Declaration.Type).ConvertedType.Interfaces.OfType<ICollection>().ToList();
+                         collectionInterfaces = _context.SemanticModel.GetTypeInfo(item.Declaration.Type).ConvertedType.Interfaces.Where(x => x.MetadataName == "ICollection").ToList();
                     } catch (Exception ex)
                     {
                         return false;
@@ -73,7 +73,7 @@ namespace InspectorPatterns.Core.Analyzers
                 }
 
                 // Iterate through all found collections in temporary list.
-                foreach (ICollection collection in collectionList)
+                foreach (INamedTypeSymbol collection in collectionList)
                 {
                     // Check if collection has storable type of Flyweight class
                     if (!IsCollectionFlyweight(collection))
@@ -103,7 +103,7 @@ namespace InspectorPatterns.Core.Analyzers
             /// <param name="collection"></param>
             /// <returns><see langword="true" /> if collection if of type Flyweight class.<br/>
             /// <see langword="false" /> if collection is not of type Flyweight class.</returns>
-            public bool IsCollectionFlyweight(ICollection collection)
+            public bool IsCollectionFlyweight(INamedTypeSymbol collection)
             {
                 // TODO: Check if collection can store type of Flyweight class.
                 // TODO: Check if collection is distinct.
@@ -157,14 +157,57 @@ namespace InspectorPatterns.Core.Analyzers
                 foreach (ObjectCreationExpressionSyntax objectCreation in objectCreations)
                 {
                     // If method return type is equal to object creation type
-                    var returnType = (IdentifierNameSyntax) _methodDeclaration.ReturnType;
-                    var creationType = (IdentifierNameSyntax) objectCreation.Type;
-                    if (returnType.Identifier.ValueText != creationType.Identifier.ValueText)
+                    var returnTypeINS = _methodDeclaration.ReturnType as IdentifierNameSyntax;
+                    var returnTypePTS = _methodDeclaration.ReturnType as PredefinedTypeSyntax;
+                    string returnType;
+
+                    var creationTypeINS = objectCreation.Type as IdentifierNameSyntax;
+                    var creationTypePTS = objectCreation.Type as PredefinedTypeSyntax;
+                    string creationType;
+
+                    if (returnTypeINS == null)
+                    {
+                        if (returnTypePTS == null)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            returnType = returnTypePTS.Keyword.ToString();
+                        }
+                    }
+                    else
+                    {
+                        returnType = returnTypeINS.Identifier.ValueText;
+                    }
+
+                    if (creationTypeINS == null)
+                    {
+                        if (creationTypePTS == null)
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            creationType = creationTypePTS.Keyword.ToString();
+                        }
+                    }
+                    else
+                    {
+                        creationType = creationTypeINS.Identifier.ValueText;
+                    }
+
+                    if (returnType == null || creationType == null)
                     {
                         continue;
                     }
 
-                    isObjectCreated = true;
+                    if (returnType == creationType)
+                    {
+                        return true;
+                    }
+
+                    isObjectCreated = false;
                 }
 
                 return isObjectCreated;

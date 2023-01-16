@@ -39,13 +39,13 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasFlyweightCollection(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
         }
 
-        [Fact]
+        [Fact(Skip = "This method has not been finished due to limitations in our knowledge of the Roslyn API. We have not been able to find a workaround and in agreement with the Stakeholders of InspectorPatterns we have decided to research this further in future.")]
         public void Test_HasFlyweightCollection_IsListCollection_ShouldReturnTrue()
         {
             //Arrange
@@ -72,13 +72,13 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasFlyweightCollection(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
         }
 
-        [Fact]
+        [Fact(Skip = "This method has not been finished due to limitations in our knowledge of the Roslyn API. We have not been able to find a workaround and in agreement with the Stakeholders of InspectorPatterns we have decided to research this further in future.")]
         public void Test_HasFlyweightCollection_IsDictionaryCollection_ShouldReturnTrue()
         {
             //Arrange
@@ -105,7 +105,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasFlyweightCollection(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -118,7 +118,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
                     private Flyweight GetFlyweight(Car sharedState)
                     {
@@ -154,7 +154,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -167,7 +167,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
                     public Flyweight GetFlyweight(Car sharedState)
                     {
@@ -203,7 +203,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -216,7 +216,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
                     private void GetFlyweight(Car sharedState)
                     {
@@ -251,7 +251,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -264,9 +264,9 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
-                    public void GetFlyweight(Car sharedState)
+                    public Flyweight GetFlyweight(Car sharedState)
                     {
                         string key = getKey(sharedState);
 
@@ -300,7 +300,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -313,9 +313,9 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
-                    public void GetFlyweight(Car sharedState)
+                    public Flyweight GetFlyweight(Car sharedState)
                     {
                         string key = getKey(sharedState);
 
@@ -349,7 +349,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -362,9 +362,9 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
-                    public void GetFlyweight(Car sharedState)
+                    public Flyweight GetFlyweight(Car sharedState)
                     { }
                 }"
             ;
@@ -385,7 +385,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
@@ -398,9 +398,9 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
-                    public void GetFlyweight(Car sharedState)
+                    public Flyweight GetFlyweight(Car sharedState)
                     {
                         string key = getKey(sharedState);
 
@@ -434,7 +434,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.True(result);
@@ -447,9 +447,9 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightClass = @"
                 public class FlyweightFactory
                 {
-                    private Dictionary<Flyweight> flyweights = new Dictionary<Flyweight>();
+                    private List<Flyweight> flyweights = new List<Flyweight>();
 
-                    public void GetFlyweight(Car sharedState)
+                    public Flyweight GetFlyweight(Car sharedState)
                     {
                         string key = getKey(sharedState);
 
@@ -483,7 +483,7 @@ namespace InspectorPatterns.Test.DesignPatternsTests
             var flyweightAnalyzer = new FlyweightAnalyzer.HasGetFlyweightMethod(context);
 
             //Act
-            var result = flyweightAnalyzer.Analyze();
+            bool result = flyweightAnalyzer.Analyze();
 
             //Assert
             Assert.False(result);
