@@ -10,8 +10,8 @@
 
 namespace InspectorPatterns {
     using System;
-    
-    
+
+
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
     /// </summary>
@@ -23,15 +23,15 @@ namespace InspectorPatterns {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
-        
+
         private static global::System.Resources.ResourceManager resourceMan;
-        
+
         private static global::System.Globalization.CultureInfo resourceCulture;
-        
+
         [global::System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("Microsoft.Performance", "CA1811:AvoidUncalledPrivateCode")]
         internal Resources() {
         }
-        
+
         /// <summary>
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
@@ -45,7 +45,7 @@ namespace InspectorPatterns {
                 return resourceMan;
             }
         }
-        
+
         /// <summary>
         ///   Overrides the current thread's CurrentUICulture property for all
         ///   resource lookups using this strongly typed resource class.
@@ -59,7 +59,7 @@ namespace InspectorPatterns {
                 resourceCulture = value;
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Is a Factory Method Pattern.
         /// </summary>
@@ -68,7 +68,7 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("FactoryMethodDescription", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to It looks like you have implemented the Factory Method pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/factory-method.
         /// </summary>
@@ -77,7 +77,7 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("FactoryMethodMessage", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Factory Method.
         /// </summary>
@@ -86,7 +86,7 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("FactoryMethodTitle", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Is a flyweight.
         /// </summary>
@@ -95,7 +95,15 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("FlyweightDescription", resourceCulture);
             }
         }
-        
+
+        ///   Looks up a localized string similar to Is a decorator.
+        /// </summary>
+        internal static string DecoratorDescription {
+            get {
+                return ResourceManager.GetString("DecoratorDescription", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to It seems you have implemented the Flyweight pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/flyweight.
         /// </summary>
@@ -104,7 +112,15 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("FlyweightMessage", resourceCulture);
             }
         }
-        
+
+        ///   Looks up a localized string similar to It seems you have implemented the Decorator pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/decorator.
+        /// </summary>
+        internal static string DecoratorMessage {
+            get {
+                return ResourceManager.GetString("DecoratorMessage", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Flyweight.
         /// </summary>
@@ -113,7 +129,15 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("FlyweightTitle", resourceCulture);
             }
         }
-        
+
+        ///   Looks up a localized string similar to Decorator.
+        /// </summary>
+        internal static string DecoratorTitle {
+            get {
+                return ResourceManager.GetString("DecoratorTitle", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to Is a singleton.
         /// </summary>
@@ -122,7 +146,7 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("SingletonDescription", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to It seems you have implemented the Singleton pattern here. If you like more information about this pattern visit: https://refactoring.guru/design-patterns/singleton.
         /// </summary>
@@ -131,7 +155,7 @@ namespace InspectorPatterns {
                 return ResourceManager.GetString("SingletonMessage", resourceCulture);
             }
         }
-        
+
         /// <summary>
         ///   Looks up a localized string similar to Singleton.
         /// </summary>
