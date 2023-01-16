@@ -130,8 +130,6 @@ namespace InspectorPatterns.Core.Analyzers
 
             public bool Analyze()
             {
-                bool isObjectCreated = false;
-
                 // Check if method is public, not empty and return type is not null.
                 if (!_methodDeclaration.Modifiers.Any(SyntaxKind.PublicKeyword) || _methodDeclaration.ReturnType == null || _methodDeclaration.Body == null)
                 {
@@ -157,6 +155,7 @@ namespace InspectorPatterns.Core.Analyzers
                 foreach (ObjectCreationExpressionSyntax objectCreation in objectCreations)
                 {
                     // If method return type is equal to object creation type
+                    // Unit test context can differ from actual environment.
                     var returnTypeINS = _methodDeclaration.ReturnType as IdentifierNameSyntax;
                     var returnTypePTS = _methodDeclaration.ReturnType as PredefinedTypeSyntax;
                     string returnType;
@@ -165,6 +164,7 @@ namespace InspectorPatterns.Core.Analyzers
                     var creationTypePTS = objectCreation.Type as PredefinedTypeSyntax;
                     string creationType;
 
+                    // Check if any returnType is valid.
                     if (returnTypeINS == null)
                     {
                         if (returnTypePTS == null)
@@ -181,6 +181,7 @@ namespace InspectorPatterns.Core.Analyzers
                         returnType = returnTypeINS.Identifier.ValueText;
                     }
 
+                    // Check if any creationType is valid.
                     if (creationTypeINS == null)
                     {
                         if (creationTypePTS == null)
@@ -197,20 +198,24 @@ namespace InspectorPatterns.Core.Analyzers
                         creationType = creationTypeINS.Identifier.ValueText;
                     }
 
+                    // Check if either values are null, if they are, it is not Flyweight.
                     if (returnType == null || creationType == null)
                     {
                         continue;
                     }
 
+                    // If Method ReturnType and CreationType are equal this might be Flyweight.
                     if (returnType == creationType)
                     {
                         return true;
                     }
 
-                    isObjectCreated = false;
+                    // No Flyweight found.
+                    return false;
                 }
 
-                return isObjectCreated;
+                // No Flyweight found.
+                return false;
             }
         }
     }
